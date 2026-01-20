@@ -2,8 +2,8 @@ import React, { useState, useEffect } from 'react';
 import SearchInterface from '../../../components/ui/SearchInterface';
 import Image from '../../../components/AppImage';
 import { INDIAN_SEARCH_TAGS } from '../../../utils/indianFormatters';
-import residentialImg from '../../../../src/assets/residential-image.jpg'
-import commercialImg from '../../../../src/assets/commercial-image.jpg'
+import residentialImg from '../../../assets/residential-image.jpg'
+import commercialImg from '../../../assets/commercial-image.jpg'
 const HeroSection = ({ onSearch }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 

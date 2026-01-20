@@ -2,7 +2,7 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
-import agent from '../../../../src/assets/realestate-agent.jpg'
+import agent from '../../../assets/realestate-agent.jpg'
 const AgentSpotlight = () => {
   const [currentSlide, setCurrentSlide] = useState(0);
   const carouselRef = useRef(null);
