@@ -1,12 +1,16 @@
 const mongoose = require("mongoose");
+require("dotenv").config(); // Load variables from .env
 
 const connectDB = async () => {
   try {
-    const conn = await mongoose.connect("mongodb+srv://dhruv23261:s3XAv2JVE2DD7w1R@cluster0.ejemc8a.mongodb.net/PY?appName=Cluster0");
-    console.log("mongodb connected");
+    const conn = await mongoose.connect(process.env.MONGO_URI, {
+      useNewUrlParser: true,
+      useUnifiedTopology: true,
+    });
+    console.log(`MongoDB connected: ${conn.connection.host}`);
   } catch (error) {
-    console.log(`Error: ${error.message}`);
-    process.exit();
+    console.error(`Error: ${error.message}`);
+    process.exit(1); // exit with failure
   }
 };
 

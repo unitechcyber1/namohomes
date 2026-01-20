@@ -21,6 +21,7 @@ app.use(cors({
   credentials: true
 }));
 
+//testing route help to check backend and frontend connectivity
 
 app.get("/api/test", (req, res) => {
   res.json({ message: "Backend connected" });
