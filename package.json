@@ -4,12 +4,14 @@
   "private": true,
   "dependencies": {
     "@dhiwise/component-tagger": "^1.0.1",
+    "@radix-ui/react-slot": "^1.2.4",
     "@reduxjs/toolkit": "^2.6.1",
     "@tailwindcss/forms": "^0.5.7",
     "@testing-library/jest-dom": "^5.15.1",
     "@testing-library/react": "^11.2.7",
     "@testing-library/user-event": "^12.8.3",
     "axios": "^1.8.4",
+    "class-variance-authority": "^0.7.1",
     "d3": "^7.9.0",
     "date-fns": "^4.1.0",
     "dotenv": "^16.0.1",
@@ -25,6 +27,8 @@
     "react-router-hash-link": "^2.4.3",
     "recharts": "^2.15.2",
     "redux": "^5.0.1",
+    "sonner": "^2.0.7",
+    "tailwind-merge": "^3.4.0",
     "tailwindcss-animate": "^1.0.7",
     "tailwindcss-elevation": "^2.0.0",
     "tailwindcss-fluid-type": "^2.0.7"

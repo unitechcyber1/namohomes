@@ -10,6 +10,8 @@ import QuickStats from './components/QuickStats';
 import AgentSpotlight from './components/AgentSpotlight';
 import Footer from './components/Footer';
 import NewLaunchProjects from './components/NewLaunchProjects';
+import CategoryBlocks from './components/CategoryBlocks';
+import LeadCapture from './components/LeadCapture';
 
 const Homepage = () => {
   const [isLoading, setIsLoading] = useState(true);
@@ -67,8 +69,10 @@ const Homepage = () => {
         <HeroSection onSearch={handleSearch} />
         <FeaturedProperties />
         <NewLaunchProjects/>
+        <CategoryBlocks/>
         <QuickStats />
         <AgentSpotlight />
+        <LeadCapture/>
       </main>
       
       <Footer />
