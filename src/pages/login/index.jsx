@@ -1,7 +1,13 @@
 import { useState } from "react";
+import { useNavigate } from "react-router-dom";
 
 export default function AuthPage() {
+  const navigate = useNavigate();
+
   const [isLogin, setIsLogin] = useState(true);
+  const [error, setError] = useState("");
+  const [loading, setLoading] = useState(false);
+
   const [formData, setFormData] = useState({
     email: "",
     password: "",
@@ -12,14 +18,42 @@ export default function AuthPage() {
     setFormData({ ...formData, [e.target.name]: e.target.value });
   };
 
+  // ✅ Validation
+  const validateForm = () => {
+    if (!formData.email || !formData.password) {
+      return "Email and password are required";
+    }
+
+    if (!isLogin) {
+      if (!/^\d{10}$/.test(formData.phone_number)) {
+        return "Phone number must be exactly 10 digits";
+      }
+
+      if (formData.password.length < 6) {
+        return "Password must be at least 6 characters";
+      }
+    }
+
+    return null;
+  };
+
   const handleSubmit = async (e) => {
     e.preventDefault();
+    setError("");
+
+    const validationError = validateForm();
+    if (validationError) {
+      setError(validationError);
+      return;
+    }
 
     const url = isLogin
       ? "http://localhost:5000/login"
       : "http://localhost:5000/signup";
 
     try {
+      setLoading(true);
+
       const res = await fetch(url, {
         method: "POST",
         headers: {
@@ -29,17 +63,28 @@ export default function AuthPage() {
       });
 
       const data = await res.json();
-      console.log(data);
 
       if (!res.ok) {
-        alert(data.message || "Something went wrong");
+        setError(data.message || "Something went wrong");
+        setLoading(false);
         return;
       }
 
-      alert(data.message || "Success");
-    } catch (error) {
-      console.error(error);
-      alert("Server not reachable");
+      // ✅ Auto login with JWT
+      if (data.token) {
+        localStorage.setItem("token", data.token);
+
+        const redirectPath =
+          localStorage.getItem("redirectAfterAuth") || "/";
+        localStorage.removeItem("redirectAfterAuth");
+
+        navigate(redirectPath);
+      }
+
+    } catch (err) {
+      setError("Server not reachable");
+    } finally {
+      setLoading(false);
     }
   };
 
@@ -50,16 +95,25 @@ export default function AuthPage() {
           {isLogin ? "Login" : "Sign Up"}
         </h2>
 
+        {error && (
+          <div className="bg-red-100 text-red-700 p-2 rounded-lg text-sm mb-4">
+            {error}
+          </div>
+        )}
+
         <form className="space-y-4" onSubmit={handleSubmit}>
           {!isLogin && (
             <div>
-              <label className="block text-sm font-medium">Name</label>
+              <label className="block text-sm font-medium">
+                Phone Number
+              </label>
               <input
-                type="number"
+                type="tel"
                 name="phone_number"
                 value={formData.phone_number}
                 onChange={handleChange}
-                placeholder="Enter your name"
+                placeholder="Enter 10-digit phone number"
+                maxLength={10}
                 className="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring"
               />
             </div>
@@ -84,23 +138,31 @@ export default function AuthPage() {
               name="password"
               value={formData.password}
               onChange={handleChange}
-              placeholder="Enter your password"
+              placeholder="Minimum 6 characters"
               className="w-full mt-1 px-3 py-2 border rounded-lg focus:outline-none focus:ring"
             />
           </div>
 
           <button
             type="submit"
-            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition"
+            disabled={loading}
+            className="w-full bg-blue-600 text-white py-2 rounded-lg hover:bg-blue-700 transition disabled:opacity-60"
           >
-            {isLogin ? "Login" : "Create Account"}
+            {loading
+              ? "Please wait..."
+              : isLogin
+              ? "Login"
+              : "Create Account"}
           </button>
         </form>
 
         <p className="text-sm text-center mt-4">
           {isLogin ? "Don’t have an account?" : "Already have an account?"}
           <button
-            onClick={() => setIsLogin(!isLogin)}
+            onClick={() => {
+              setIsLogin(!isLogin);
+              setError("");
+            }}
             className="text-blue-600 ml-1 hover:underline"
             type="button"
           >
