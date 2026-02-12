@@ -19,7 +19,7 @@ const defaultCategories = [
     { name: 'Residential', slug: 'residential', description: 'Your dream home awaits', icon: 'residential', image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80' },
     { name: 'Commercial', slug: 'commercial', description: 'Business properties', icon: 'commercial', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80' },
     { name: 'SCO Plots', slug: 'sco_plots', description: 'Shop-Cum-Office spaces', icon: 'sco_plots', image: 'https://images.unsplash.com/photo-1555636222-cae831e670b3?w=600&q=80' },
-  { name: 'Office Spaces', slug: 'office', description: 'Premium office solutions', icon: 'office', image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&q=80' },
+    { name: 'Office Spaces', slug: 'office', description: 'Premium office solutions', icon: 'office', image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&q=80' },
 
 ];
 

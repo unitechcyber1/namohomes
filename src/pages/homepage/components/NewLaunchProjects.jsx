@@ -1,10 +1,13 @@
-import React, { useState } from "react";
+import React, { useEffect, useState } from "react";
 import PropertyCard from "../../../components/cards/PropertyCard";
 import { Link } from "react-router-dom";
 import Icon from '../../../components/AppIcon';
+import { getProjects } from "../../../service/projectService";
 
 const NewLaunchProjects = () => {
   const [savedProperties, setSavedProperties] = useState(new Set());
+    const [projects, setProjects] = useState([]);
+    const [loading, setLoading] = useState(false);
 
   const newLaunchProjects = [
     {
@@ -110,6 +113,25 @@ const NewLaunchProjects = () => {
       daysOnMarket: 7
     }
   ];
+    const loadProjects = async () => {
+    try {
+      setLoading(true);
+  
+      const data = await getProjects({
+        page: 1,
+        limit: 20,
+      });
+  
+      setProjects(data.projects);
+    } catch (err) {
+      console.error(err);
+    } finally {
+      setLoading(false);
+    }
+  };
+  useEffect(() => {
+    loadProjects()
+  },[])
 
   const handleSaveProperty = (propertyId) => {
     setSavedProperties(prev => {
@@ -138,7 +160,7 @@ const NewLaunchProjects = () => {
 
         {/* Properties Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
-          {newLaunchProjects?.map((property) => (
+          {projects?.map((property) => (
             <PropertyCard
               key={property.id}
               property={property}
