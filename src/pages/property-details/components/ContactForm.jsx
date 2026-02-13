@@ -1,4 +1,3 @@
-
 // src/pages/property-details/components/ContactForm.jsx
 import React, { useState } from "react";
 import Icon from "../../../components/AppIcon";
@@ -117,36 +116,19 @@ const ContactForm = ({ property, agent, onClose }) => {
           <>
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
-              <div className="flex items-start justify-between gap-4 w-full">
-                {/* Left Side - Agent Info */}
-                <div className="flex items-start gap-4 min-w-0">
-                  <Image
-                    src={agent?.avatar}
-                    alt={agent?.name}
-                    className="w-14 h-14 rounded-full object-cover flex-shrink-0"
-                  />
-
-                  <div className="min-w-0">
-                    <h2 className="text-lg sm:text-xl font-semibold text-text-primary leading-tight">
-                      Contact {agent?.name}
-                    </h2>
-
-                    <p className="text-sm text-text-secondary truncate">
-                      About {property?.title}
-                    </p>
-
-                    {/* Response Time */}
-                    <div className="flex items-center gap-2 mt-2 text-sm text-green-600">
-                      <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></span>
-                      <span>Responds within 1 hour</span>
-                    </div>
-                  </div>
-                </div>
+              <div className="mb-2">
+                <h2 className="md:text-3xl font-bold text-text-primary mb-2">
+                  Interested in This Property?
+                </h2>
+               <p className="hidden sm:block text-text-secondary text-sm">
+                  Fill in your details to receive a personalized quote and
+                  expert assistance.
+                </p>
               </div>
 
               <button
                 onClick={onClose}
-                 className=" md:flex items-start justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition"
+                className=" md:flex items-start justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition"
                 aria-label="Close form"
               >
                 <Icon name="X" size={20} />
@@ -328,7 +310,6 @@ const ContactForm = ({ property, agent, onClose }) => {
 
               {/* Submit Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
-               
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -367,4 +348,3 @@ const ContactForm = ({ property, agent, onClose }) => {
 };
 
 export default ContactForm;
-

@@ -160,7 +160,7 @@ const NewLaunchProjects = () => {
 
         {/* Properties Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
-          {projects?.map((property) => (
+          {projects?.slice(0, 6).map((property) => (
             <PropertyCard
               key={property.id}
               property={property}
