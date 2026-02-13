@@ -1,79 +1,79 @@
 // src/pages/property-details/components/ContactForm.jsx
-import React, { useState } from 'react';
-import Icon from '../../../components/AppIcon';
-import Image from '../../../components/AppImage';
+import React, { useState } from "react";
+import Icon from "../../../components/AppIcon";
+import Image from "../../../components/AppImage";
 
 const ContactForm = ({ property, agent, onClose }) => {
   const [formData, setFormData] = useState({
-    name: '',
-    email: '',
-    phone: '',
+    name: "",
+    email: "",
+    phone: "",
     message: `I'm interested in ${property?.title} at ${property?.address}. Please contact me to schedule a viewing or provide more information.`,
-    contactMethod: 'email', // 'email', 'phone', 'text'preferredTime: 'anytime' // 'morning', 'afternoon', 'evening', 'anytime'
+    contactMethod: "email", // 'email', 'phone', 'text'preferredTime: 'anytime' // 'morning', 'afternoon', 'evening', 'anytime'
   });
-  
+
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
 
   const validateForm = () => {
     const newErrors = {};
-    
+
     if (!formData.name.trim()) {
-      newErrors.name = 'Name is required';
+      newErrors.name = "Name is required";
     }
-    
+
     if (!formData.email.trim()) {
-      newErrors.email = 'Email is required';
+      newErrors.email = "Email is required";
     } else if (!/\S+@\S+\.\S+/.test(formData.email)) {
-      newErrors.email = 'Please enter a valid email address';
+      newErrors.email = "Please enter a valid email address";
     }
-    
+
     if (!formData.phone.trim()) {
-      newErrors.phone = 'Phone number is required';
+      newErrors.phone = "Phone number is required";
     } else if (!/^[\d\s\-\+\(\)]+$/.test(formData.phone)) {
-      newErrors.phone = 'Please enter a valid phone number';
+      newErrors.phone = "Please enter a valid phone number";
     }
-    
+
     if (!formData.message.trim()) {
-      newErrors.message = 'Message is required';
+      newErrors.message = "Message is required";
     }
-    
+
     setErrors(newErrors);
     return Object.keys(newErrors).length === 0;
   };
 
   const handleInputChange = (e) => {
     const { name, value } = e.target;
-    setFormData(prev => ({ ...prev, [name]: value }));
-    
+    setFormData((prev) => ({ ...prev, [name]: value }));
+
     // Clear error when user starts typing
     if (errors[name]) {
-      setErrors(prev => ({ ...prev, [name]: '' }));
+      setErrors((prev) => ({ ...prev, [name]: "" }));
     }
   };
 
   const handleSubmit = async (e) => {
     e.preventDefault();
-    
+
     if (!validateForm()) {
       return;
     }
-    
+
     setIsSubmitting(true);
-    
+
     try {
       // Simulate API call
-      await new Promise(resolve => setTimeout(resolve, 2000));
-      
+      await new Promise((resolve) => setTimeout(resolve, 2000));
+
       setIsSubmitted(true);
-      
+
       // Auto-close after 3 seconds
       setTimeout(() => {
         onClose();
       }, 3000);
     } catch (error) {
-      console.error('Error submitting form:', error);
+      console.error("Error submitting form:", error);
     } finally {
       setIsSubmitting(false);
     }
@@ -86,7 +86,7 @@ const ContactForm = ({ property, agent, onClose }) => {
   };
 
   return (
-    <div 
+    <div
       className="fixed inset-0 bg-black/50 z-modal flex items-center justify-center p-4"
       onClick={handleOverlayClick}
     >
@@ -101,7 +101,8 @@ const ContactForm = ({ property, agent, onClose }) => {
               Message Sent Successfully!
             </h2>
             <p className="text-text-secondary mb-6">
-              Thank you for your interest. {agent?.name} will contact you within 24 hours.
+              Thank you for your interest. {agent?.name} will contact you within
+              24 hours.
             </p>
             <button
               onClick={onClose}
@@ -115,24 +116,36 @@ const ContactForm = ({ property, agent, onClose }) => {
           <>
             {/* Header */}
             <div className="flex items-center justify-between p-6 border-b border-border">
-              <div className="flex items-center space-x-4">
-                <Image
-                  src={agent?.avatar}
-                  alt={agent?.name}
-                  className="w-12 h-12 rounded-full object-cover"
-                />
-                <div>
-                  <h2 className="text-xl font-bold text-text-primary">
-                    Contact {agent?.name}
-                  </h2>
-                  <p className="text-text-secondary">
-                    About {property?.title}
-                  </p>
+              <div className="flex items-start justify-between gap-4 w-full">
+                {/* Left Side - Agent Info */}
+                <div className="flex items-start gap-4 min-w-0">
+                  <Image
+                    src={agent?.avatar}
+                    alt={agent?.name}
+                    className="w-14 h-14 rounded-full object-cover flex-shrink-0"
+                  />
+
+                  <div className="min-w-0">
+                    <h2 className="text-lg sm:text-xl font-semibold text-text-primary leading-tight">
+                      Contact {agent?.name}
+                    </h2>
+
+                    <p className="text-sm text-text-secondary truncate">
+                      About {property?.title}
+                    </p>
+
+                    {/* Response Time */}
+                    <div className="flex items-center gap-2 mt-2 text-sm text-green-600">
+                      <span className="w-2 h-2 bg-green-500 rounded-full flex-shrink-0"></span>
+                      <span>Responds within 1 hour</span>
+                    </div>
+                  </div>
                 </div>
               </div>
+
               <button
                 onClick={onClose}
-                className="p-2 hover:bg-secondary-100 rounded-md transition-all duration-200"
+                 className=" md:flex items-start justify-center w-8 h-8 rounded-full hover:bg-gray-100 transition"
                 aria-label="Close form"
               >
                 <Icon name="X" size={20} />
@@ -140,11 +153,14 @@ const ContactForm = ({ property, agent, onClose }) => {
             </div>
 
             {/* Form */}
-            <form onSubmit={handleSubmit} className="p-6 space-y-6">
+            <form onSubmit={handleSubmit} className="p-4 space-y-6">
               {/* Personal Information */}
-              <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
+              <div className="grid grid-cols-1 gap-4">
                 <div>
-                  <label htmlFor="name" className="block text-sm font-medium text-text-primary mb-2">
+                  <label
+                    htmlFor="name"
+                    className="block text-sm font-medium text-text-primary mb-2"
+                  >
                     Full Name *
                   </label>
                   <input
@@ -154,7 +170,9 @@ const ContactForm = ({ property, agent, onClose }) => {
                     value={formData.name}
                     onChange={handleInputChange}
                     className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 ${
-                      errors.name ? 'border-error' : 'border-border focus:border-primary'
+                      errors.name
+                        ? "border-error"
+                        : "border-border focus:border-primary"
                     }`}
                     placeholder="Enter your full name"
                   />
@@ -162,9 +180,11 @@ const ContactForm = ({ property, agent, onClose }) => {
                     <p className="mt-1 text-sm text-error">{errors.name}</p>
                   )}
                 </div>
-                
                 <div>
-                  <label htmlFor="email" className="block text-sm font-medium text-text-primary mb-2">
+                  <label
+                    htmlFor="email"
+                    className="block text-sm font-medium text-text-primary mb-2"
+                  >
                     Email Address *
                   </label>
                   <input
@@ -174,7 +194,9 @@ const ContactForm = ({ property, agent, onClose }) => {
                     value={formData.email}
                     onChange={handleInputChange}
                     className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 ${
-                      errors.email ? 'border-error' : 'border-border focus:border-primary'
+                      errors.email
+                        ? "border-error"
+                        : "border-border focus:border-primary"
                     }`}
                     placeholder="your.email@example.com"
                   />
@@ -185,7 +207,10 @@ const ContactForm = ({ property, agent, onClose }) => {
               </div>
 
               <div>
-                <label htmlFor="phone" className="block text-sm font-medium text-text-primary mb-2">
+                <label
+                  htmlFor="phone"
+                  className="block text-sm font-medium text-text-primary mb-2"
+                >
                   Phone Number *
                 </label>
                 <input
@@ -195,16 +220,18 @@ const ContactForm = ({ property, agent, onClose }) => {
                   value={formData.phone}
                   onChange={handleInputChange}
                   className={`w-full px-3 py-2 border rounded-md focus:ring-2 focus:ring-primary-500 focus:ring-offset-2 transition-all duration-200 ${
-                    errors.phone ? 'border-error' : 'border-border focus:border-primary'
+                    errors.phone
+                      ? "border-error"
+                      : "border-border focus:border-primary"
                   }`}
-                  placeholder="(555) 123-4567"
+                  placeholder="+91 9999999999"
                 />
                 {errors.phone && (
                   <p className="mt-1 text-sm text-error">{errors.phone}</p>
                 )}
               </div>
 
-              {/* Contact Preferences */}
+              {/* Contact Preferences
               <div className="grid grid-cols-1 md:grid-cols-2 gap-4">
                 <div>
                   <label htmlFor="contactMethod" className="block text-sm font-medium text-text-primary mb-2">
@@ -242,7 +269,7 @@ const ContactForm = ({ property, agent, onClose }) => {
                 </div>
               </div>
 
-              {/* Message */}
+              {/* Message 
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-text-primary mb-2">
                   Message *
@@ -261,9 +288,9 @@ const ContactForm = ({ property, agent, onClose }) => {
                 {errors.message && (
                   <p className="mt-1 text-sm text-error">{errors.message}</p>
                 )}
-              </div>
+              </div> */}
 
-              {/* Quick Actions */}
+              {/* Quick Actions 
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
@@ -296,22 +323,18 @@ const ContactForm = ({ property, agent, onClose }) => {
                   Discuss Price
                 </button>
               </div>
+               */}
 
               {/* Submit Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                <button
-                  type="button"
-                  onClick={onClose}
-                  className="flex-1 px-6 py-3 border border-border text-text-secondary rounded-md hover:bg-secondary-100 transition-all duration-200"
-                >
-                  Cancel
-                </button>
+                
                 <button
                   type="submit"
                   disabled={isSubmitting}
                   className={`flex-1 flex items-center justify-center space-x-2 px-6 py-3 rounded-md transition-all duration-200 ${
                     isSubmitting
-                      ? 'bg-secondary text-text-secondary cursor-not-allowed' :'bg-primary text-white hover:bg-primary-700'
+                      ? "bg-secondary text-text-secondary cursor-not-allowed"
+                      : "bg-primary text-white hover:bg-primary-700"
                   }`}
                 >
                   {isSubmitting ? (
@@ -331,7 +354,8 @@ const ContactForm = ({ property, agent, onClose }) => {
               {/* Disclaimer */}
               <div className="text-xs text-text-secondary bg-secondary-100 p-3 rounded-md">
                 <Icon name="Info" size={12} className="inline mr-1" />
-                Your information will only be shared with the listing agent and will not be used for marketing purposes.
+                Your information will only be shared with the listing agent and
+                will not be used for marketing purposes.
               </div>
             </form>
           </>
