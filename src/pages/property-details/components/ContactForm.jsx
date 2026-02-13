@@ -1,3 +1,4 @@
+
 // src/pages/property-details/components/ContactForm.jsx
 import React, { useState } from "react";
 import Icon from "../../../components/AppIcon";
@@ -249,7 +250,7 @@ const ContactForm = ({ property, agent, onClose }) => {
                     <option value="text">Text Message</option>
                   </select>
                 </div>
-                
+               
                 <div>
                   <label htmlFor="preferredTime" className="block text-sm font-medium text-text-primary mb-2">
                     Best Time to Contact
@@ -269,7 +270,7 @@ const ContactForm = ({ property, agent, onClose }) => {
                 </div>
               </div>
 
-              {/* Message 
+              {/* Message
               <div>
                 <label htmlFor="message" className="block text-sm font-medium text-text-primary mb-2">
                   Message *
@@ -290,13 +291,13 @@ const ContactForm = ({ property, agent, onClose }) => {
                 )}
               </div> */}
 
-              {/* Quick Actions 
+              {/* Quick Actions
               <div className="flex flex-wrap gap-2">
                 <button
                   type="button"
-                  onClick={() => setFormData(prev => ({ 
-                    ...prev, 
-                    message: `I would like to schedule a showing for ${property?.title} at ${property?.address}.` 
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    message: `I would like to schedule a showing for ${property?.title} at ${property?.address}.`
                   }))}
                   className="px-3 py-1 text-sm bg-secondary-100 text-text-secondary rounded-md hover:bg-secondary-200 transition-all duration-200"
                 >
@@ -304,9 +305,9 @@ const ContactForm = ({ property, agent, onClose }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setFormData(prev => ({ 
-                    ...prev, 
-                    message: `I need more information about ${property?.title}. Can you provide details about the neighborhood, schools, and amenities?` 
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    message: `I need more information about ${property?.title}. Can you provide details about the neighborhood, schools, and amenities?`
                   }))}
                   className="px-3 py-1 text-sm bg-secondary-100 text-text-secondary rounded-md hover:bg-secondary-200 transition-all duration-200"
                 >
@@ -314,9 +315,9 @@ const ContactForm = ({ property, agent, onClose }) => {
                 </button>
                 <button
                   type="button"
-                  onClick={() => setFormData(prev => ({ 
-                    ...prev, 
-                    message: `What is the best price you can offer for ${property?.title}?` 
+                  onClick={() => setFormData(prev => ({
+                    ...prev,
+                    message: `What is the best price you can offer for ${property?.title}?`
                   }))}
                   className="px-3 py-1 text-sm bg-secondary-100 text-text-secondary rounded-md hover:bg-secondary-200 transition-all duration-200"
                 >
@@ -327,7 +328,7 @@ const ContactForm = ({ property, agent, onClose }) => {
 
               {/* Submit Buttons */}
               <div className="flex flex-col sm:flex-row gap-3 pt-4">
-                
+               
                 <button
                   type="submit"
                   disabled={isSubmitting}
@@ -366,3 +367,4 @@ const ContactForm = ({ property, agent, onClose }) => {
 };
 
 export default ContactForm;
+
