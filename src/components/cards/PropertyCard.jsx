@@ -1,11 +1,17 @@
 // src/components/cards/PropertyCard.jsx
-import React from "react";
+import React,{useState} from "react";
 import { Link } from "react-router-dom";
 import Icon from "../AppIcon";
 import Image from "../AppImage";
 import { formatINR, formatArea } from "../../utils/indianFormatters";
+import ContactForm from "../../pages/property-details/components/ContactForm";
+
+
+
+
 
 const PropertyCard = ({ property, saved, onSave }) => {
+   const [showForm, setShowForm] = useState(false);
   return (
     <Link
       to={`/property-details?id=${property?.id}`}
@@ -63,11 +69,33 @@ const PropertyCard = ({ property, saved, onSave }) => {
           </p>
         </div>
 
-        <div className="mb-4">
-          <p className="text-2xl font-bold text-primary">
-            ₹{property?.starting_price}
-          </p>
-        </div>
+        <div className="mb-4 flex items-center justify-between">
+  <p className="text-2xl font-bold text-primary">
+    ₹{property?.starting_price}
+  </p>
+
+  <button
+  onClick={(e) => {
+    e.preventDefault();   
+    e.stopPropagation();  
+    setShowForm(true);
+  }}
+ className="px-5 py-2 border border-blue-600 bg-white text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition duration-200"
+
+
+>
+  Enquire Now
+</button>
+
+</div>
+
+{showForm && (
+  <ContactForm
+          // optional (if you want property data)
+    onClose={() => setShowForm(false)}  // important for closing
+  />
+)}
+
 
         {/* <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
           <div className="flex items-center text-sm text-text-secondary">
