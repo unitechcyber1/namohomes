@@ -29,7 +29,6 @@ const FeaturedProperties = () => {
 useEffect(() => {
   loadProjects()
 },[])
-console.log(projects)
 
 
   const handleSaveProperty = (propertyId) => {
