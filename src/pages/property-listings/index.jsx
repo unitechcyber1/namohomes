@@ -346,20 +346,12 @@ const PropertyListings = () => {
             `}
                           >
                             {filteredProperties.map((property, index) => (
-                              <div
-                                key={property?.id}
-                                ref={
-                                  index === filteredProperties.length - 1
-                                    ? lastPropertyElementRef
-                                    : null
-                                }
-                              >
-                                <PropertyCard
-                                  property={property}
-                                  variant="card"
-                                  onSave={handlePropertySave}
-                                />
-                              </div>
+                              <PropertyCard
+                                key={property?._id || index}
+                                property={property}
+                                variant="card"
+                                onSave={handlePropertySave}
+                              />
                             ))}
                           </div>
                         )}
@@ -402,7 +394,7 @@ const PropertyListings = () => {
                       <div className="space-y-4">
                         {filteredProperties?.map((property, index) => (
                           <div
-                            key={property?.id}
+                            key={property?._id}
                             ref={index === filteredProperties?.length - 1 ? lastPropertyElementRef : null}
                           >
                             <PropertyCard
