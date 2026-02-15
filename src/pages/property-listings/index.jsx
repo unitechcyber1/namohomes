@@ -28,7 +28,7 @@ const PropertyListings = () => {
       setLoading(true);
       const data = await getProjects({
         page: pageNumber,
-        limit: 20,
+        limit: 21,
       });
 
       setProperties(data.projects);
@@ -370,7 +370,7 @@ const PropertyListings = () => {
               ${
                 isFilterOpen
                   ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2"
-                  : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+                  : "grid-cols-1 sm:grid-cols-4 lg:grid-cols-3"
               }
             `}
                           >
@@ -382,10 +382,14 @@ const PropertyListings = () => {
                                 onSave={handlePropertySave}
                               />
                             ))}
-                            {/* Pagination */}
-                            <div>
-                            {filteredProperties.length > 0 && (
-                              <div className="flex justify-center items-center gap-2 mt-10 pb-10">
+                          
+                           </div>
+                        )}
+                      </>
+                    )}
+                  </div>
+                   {filteredProperties.length > 0 && (
+                              <div className="flex justify-center items-center w-full gap-2 mt-10 pb-10">
                                 <button
                                   disabled={currentPage === 1}
                                   onClick={() => loadProjects(currentPage - 1)}
@@ -418,13 +422,8 @@ const PropertyListings = () => {
                               </div>
                              
                             )}
-                          </div>
-                           </div>
-                        )}
-                      </>
-                    )}
-                  </div>
                 </div>
+                
 
                 {/* Map View */}
                 {/* <div className="w-2/5 border-l border-border">
