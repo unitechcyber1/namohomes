@@ -1,35 +1,40 @@
-import React, { useState, useEffect, useRef } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
-import Header from '../../components/ui/Header';
-import Icon from '../../components/AppIcon';
-import FilterPanel from './components/FilterPanel';
-import MapView from './components/MapView';
-import SortDropdown from './components/SortDropdown';
-import { getProjects } from '../../service/projectService';
-import PropertyCard from '../../components/cards/PropertyCard';
+import React, { useState, useEffect, useRef } from "react";
+import { useSearchParams, Link } from "react-router-dom";
+import Header from "../../components/ui/Header";
+import Icon from "../../components/AppIcon";
+import FilterPanel from "./components/FilterPanel";
+import MapView from "./components/MapView";
+import SortDropdown from "./components/SortDropdown";
+import { getProjects } from "../../service/projectService";
+import PropertyCard from "../../components/cards/PropertyCard";
 
 const PropertyListings = () => {
   const [searchParams, setSearchParams] = useSearchParams();
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(true);
-  const [viewMode, setViewMode] = useState('list'); // 'list' or 'map'
+  const [viewMode, setViewMode] = useState("list"); // 'list' or 'map'
   const [isFilterOpen, setIsFilterOpen] = useState(false);
   const [selectedProperty, setSelectedProperty] = useState(null);
-  const [sortBy, setSortBy] = useState('relevance');
+  const [sortBy, setSortBy] = useState("relevance");
   const [page, setPage] = useState(1);
   const [hasMore, setHasMore] = useState(true);
   const observerRef = useRef();
+  const [currentPage, setCurrentPage] = useState(1);
+  const [totalPages, setTotalPages] = useState(1);
 
-  const loadProjects = async () => {
+  const loadProjects = async (pageNumber = 1) => {
     try {
       setLoading(true);
       const data = await getProjects({
-        page: 1,
+        page: pageNumber,
         limit: 20,
       });
+
       setProperties(data.projects);
-      applyFilters(data.projects);
+      setFilteredProperties(data.projects);
+      setCurrentPage(pageNumber);
+      setTotalPages(data.totalPages); // backend must send this
     } catch (err) {
       console.error(err);
     } finally {
@@ -43,7 +48,7 @@ const PropertyListings = () => {
     // Simulate API call
     setTimeout(() => {
       // setProperties(mockProperties);
-      loadProjects()
+      loadProjects();
       // applyFilters(properties);
       setLoading(false);
     }, 1000);
@@ -52,56 +57,57 @@ const PropertyListings = () => {
   // Apply filters based on search params
   const applyFilters = (propertiesToFilter = properties) => {
     let filtered = [...propertiesToFilter];
-    console.log(filtered)
-    const query = searchParams?.get('query');
-    const location = searchParams?.get('location');
-    const propertyType = searchParams?.get('propertyType');
-    const minPrice = searchParams?.get('minPrice');
-    const maxPrice = searchParams?.get('maxPrice');
-    const bedrooms = searchParams?.get('bedrooms');
-    const bathrooms = searchParams?.get('bathrooms');
+    console.log(filtered);
+    const query = searchParams?.get("query");
+    const location = searchParams?.get("location");
+    const propertyType = searchParams?.get("propertyType");
+    const minPrice = searchParams?.get("minPrice");
+    const maxPrice = searchParams?.get("maxPrice");
+    const bedrooms = searchParams?.get("bedrooms");
+    const bathrooms = searchParams?.get("bathrooms");
 
     if (query) {
-      filtered = filtered?.filter(property =>
-        property?.title?.toLowerCase()?.includes(query?.toLowerCase()) ||
-        property?.address?.toLowerCase()?.includes(query?.toLowerCase()) ||
-        property?.description?.toLowerCase()?.includes(query?.toLowerCase())
+      filtered = filtered?.filter(
+        (property) =>
+          property?.title?.toLowerCase()?.includes(query?.toLowerCase()) ||
+          property?.address?.toLowerCase()?.includes(query?.toLowerCase()) ||
+          property?.description?.toLowerCase()?.includes(query?.toLowerCase()),
       );
     }
 
     if (location) {
-      filtered = filtered?.filter(property =>
-        property?.address?.toLowerCase()?.includes(location?.toLowerCase())
+      filtered = filtered?.filter((property) =>
+        property?.address?.toLowerCase()?.includes(location?.toLowerCase()),
       );
     }
 
-    if (propertyType && propertyType !== 'all') {
-      filtered = filtered?.filter(property =>
-        property?.propertyType === propertyType
+    if (propertyType && propertyType !== "all") {
+      filtered = filtered?.filter(
+        (property) => property?.propertyType === propertyType,
       );
     }
 
     if (minPrice) {
-      filtered = filtered?.filter(property =>
-        property?.price >= parseInt(minPrice)
+      filtered = filtered?.filter(
+        (property) => property?.price >= parseInt(minPrice),
       );
     }
 
     if (maxPrice) {
-      filtered = filtered?.filter(property =>
-        property?.price <= parseInt(maxPrice)
+      filtered = filtered?.filter(
+        (property) => property?.price <= parseInt(maxPrice),
       );
     }
 
     if (bedrooms) {
-      filtered = filtered?.filter(property =>
-        property?.bedrooms >= parseInt(bedrooms)
+      filtered = filtered?.filter(
+        (property) => property?.bedrooms >= parseInt(bedrooms),
       );
     }
 
     if (bathrooms) {
-      filtered = filtered?.filter(property =>
-        property?.bathrooms >= parseInt(bathrooms)
+      filtered = filtered?.filter(
+        (property) => property?.bathrooms >= parseInt(bathrooms),
       );
     }
 
@@ -116,15 +122,15 @@ const PropertyListings = () => {
     const sorted = [...propertiesToSort];
 
     switch (sortOption) {
-      case 'price-low':
+      case "price-low":
         return sorted?.sort((a, b) => a?.price - b?.price);
-      case 'price-high':
+      case "price-high":
         return sorted?.sort((a, b) => b?.price - a?.price);
-      case 'newest':
+      case "newest":
         return sorted?.sort((a, b) => a?.daysOnMarket - b?.daysOnMarket);
-      case 'oldest':
+      case "oldest":
         return sorted?.sort((a, b) => b?.daysOnMarket - a?.daysOnMarket);
-      case 'size':
+      case "size":
         return sorted?.sort((a, b) => b?.sqft - a?.sqft);
       default:
         return sorted;
@@ -143,7 +149,7 @@ const PropertyListings = () => {
     const newSearchParams = new URLSearchParams();
 
     Object.entries(filters)?.forEach(([key, value]) => {
-      if (value && value !== '' && value !== 'all') {
+      if (value && value !== "" && value !== "all") {
         newSearchParams?.set(key, value);
       }
     });
@@ -154,12 +160,16 @@ const PropertyListings = () => {
 
   // Handle property save/unsave
   const handlePropertySave = (propertyId, isSaved) => {
-    setProperties(prev => prev?.map(property =>
-      property?.id === propertyId ? { ...property, isSaved } : property
-    ));
-    setFilteredProperties(prev => prev?.map(property =>
-      property?.id === propertyId ? { ...property, isSaved } : property
-    ));
+    setProperties((prev) =>
+      prev?.map((property) =>
+        property?.id === propertyId ? { ...property, isSaved } : property,
+      ),
+    );
+    setFilteredProperties((prev) =>
+      prev?.map((property) =>
+        property?.id === propertyId ? { ...property, isSaved } : property,
+      ),
+    );
   };
 
   // Infinite scroll observer
@@ -169,9 +179,9 @@ const PropertyListings = () => {
 
     if (observerRef?.current) observerRef?.current?.disconnect();
 
-    observerRef.current = new IntersectionObserver(entries => {
+    observerRef.current = new IntersectionObserver((entries) => {
       if (entries[0].isIntersecting && hasMore) {
-        setPage(prevPage => prevPage + 1);
+        setPage((prevPage) => prevPage + 1);
       }
     });
 
@@ -183,21 +193,21 @@ const PropertyListings = () => {
   // Get breadcrumb items
   const getBreadcrumbs = () => {
     const breadcrumbs = [
-      { label: 'Home', path: '/' },
-      { label: 'Properties', path: '/property-listings' }
+      { label: "Home", path: "/" },
+      { label: "Properties", path: "/property-listings" },
     ];
 
-    const location = searchParams?.get('location');
-    const propertyType = searchParams?.get('propertyType');
+    const location = searchParams?.get("location");
+    const propertyType = searchParams?.get("propertyType");
 
     if (location) {
       breadcrumbs?.push({ label: location, path: null });
     }
 
-    if (propertyType && propertyType !== 'all') {
+    if (propertyType && propertyType !== "all") {
       breadcrumbs?.push({
         label: propertyType?.charAt(0)?.toUpperCase() + propertyType?.slice(1),
-        path: null
+        path: null,
       });
     }
 
@@ -215,7 +225,11 @@ const PropertyListings = () => {
               {getBreadcrumbs()?.map((crumb, index) => (
                 <React.Fragment key={index}>
                   {index > 0 && (
-                    <Icon name="ChevronRight" size={14} className="text-text-secondary" />
+                    <Icon
+                      name="ChevronRight"
+                      size={14}
+                      className="text-text-secondary"
+                    />
                   )}
                   {crumb?.path ? (
                     <Link
@@ -225,7 +239,9 @@ const PropertyListings = () => {
                       {crumb?.label}
                     </Link>
                   ) : (
-                    <span className="text-text-primary font-medium">{crumb?.label}</span>
+                    <span className="text-text-primary font-medium">
+                      {crumb?.label}
+                    </span>
                   )}
                 </React.Fragment>
               ))}
@@ -242,7 +258,9 @@ const PropertyListings = () => {
                   Properties for Sale
                 </h1>
                 <p className="text-text-secondary mt-1">
-                  {loading ? 'Loading...' : `${filteredProperties?.length} properties found`}
+                  {loading
+                    ? "Loading..."
+                    : `${filteredProperties?.length} properties found`}
                 </p>
               </div>
 
@@ -250,17 +268,23 @@ const PropertyListings = () => {
                 {/* View Toggle (Mobile) */}
                 <div className="flex lg:hidden bg-secondary-100 rounded-md p-1">
                   <button
-                    onClick={() => setViewMode('list')}
-                    className={`px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${viewMode === 'list' ? 'bg-surface text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary'
-                      }`}
+                    onClick={() => setViewMode("list")}
+                    className={`px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${
+                      viewMode === "list"
+                        ? "bg-surface text-text-primary shadow-sm"
+                        : "text-text-secondary hover:text-text-primary"
+                    }`}
                   >
                     <Icon name="List" size={16} className="inline mr-1" />
                     List
                   </button>
                   <button
-                    onClick={() => setViewMode('map')}
-                    className={`px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${viewMode === 'map' ? 'bg-surface text-text-primary shadow-sm' : 'text-text-secondary hover:text-text-primary'
-                      }`}
+                    onClick={() => setViewMode("map")}
+                    className={`px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${
+                      viewMode === "map"
+                        ? "bg-surface text-text-primary shadow-sm"
+                        : "text-text-secondary hover:text-text-primary"
+                    }`}
                   >
                     <Icon name="Map" size={16} className="inline mr-1" />
                     Map
@@ -292,13 +316,13 @@ const PropertyListings = () => {
               onClose={() => setIsFilterOpen(false)}
               onFilterChange={handleFilterChange}
               initialFilters={{
-                query: searchParams?.get('query') || '',
-                location: searchParams?.get('location') || '',
-                propertyType: searchParams?.get('propertyType') || '',
-                minPrice: searchParams?.get('minPrice') || '',
-                maxPrice: searchParams?.get('maxPrice') || '',
-                bedrooms: searchParams?.get('bedrooms') || '',
-                bathrooms: searchParams?.get('bathrooms') || ''
+                query: searchParams?.get("query") || "",
+                location: searchParams?.get("location") || "",
+                propertyType: searchParams?.get("propertyType") || "",
+                minPrice: searchParams?.get("minPrice") || "",
+                maxPrice: searchParams?.get("maxPrice") || "",
+                bedrooms: searchParams?.get("bedrooms") || "",
+                bathrooms: searchParams?.get("bathrooms") || "",
               }}
             />
 
@@ -328,7 +352,11 @@ const PropertyListings = () => {
                       <>
                         {filteredProperties.length === 0 ? (
                           <div className="text-center py-12">
-                            <Icon name="Search" size={48} className="text-secondary mx-auto mb-4" />
+                            <Icon
+                              name="Search"
+                              size={48}
+                              className="text-secondary mx-auto mb-4"
+                            />
                             <h3 className="text-lg font-semibold text-text-primary mb-2">
                               No properties found
                             </h3>
@@ -339,10 +367,11 @@ const PropertyListings = () => {
                         ) : (
                           <div
                             className={`grid gap-6 transition-all duration-300
-              ${isFilterOpen
-                                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2"
-                                : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
-                              }
+              ${
+                isFilterOpen
+                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2"
+                  : "grid-cols-1 sm:grid-cols-2 lg:grid-cols-3"
+              }
             `}
                           >
                             {filteredProperties.map((property, index) => (
@@ -353,13 +382,49 @@ const PropertyListings = () => {
                                 onSave={handlePropertySave}
                               />
                             ))}
+                            {/* Pagination */}
+                            <div>
+                            {filteredProperties.length > 0 && (
+                              <div className="flex justify-center items-center gap-2 mt-10 pb-10">
+                                <button
+                                  disabled={currentPage === 1}
+                                  onClick={() => loadProjects(currentPage - 1)}
+                                  className="px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 disabled:opacity-50"
+                                >
+                                  Previous
+                                </button>
+
+                                {[...Array(totalPages)].map((_, index) => (
+                                  <button
+                                    key={index}
+                                    onClick={() => loadProjects(index + 1)}
+                                    className={`px-4 py-2 border rounded-md ${
+                                      currentPage === index + 1
+                                        ? "bg-blue-600 text-white border-blue-600"
+                                        : "bg-white border-gray-300 hover:bg-gray-100"
+                                    }`}
+                                  >
+                                    {index + 1}
+                                  </button>
+                                ))}
+
+                                <button
+                                  disabled={currentPage === totalPages}
+                                  onClick={() => loadProjects(currentPage + 1)}
+                                  className="px-4 py-2 border border-gray-300 rounded-md bg-white hover:bg-gray-100 disabled:opacity-50"
+                                >
+                                  Next
+                                </button>
+                              </div>
+                             
+                            )}
                           </div>
+                           </div>
                         )}
                       </>
                     )}
                   </div>
                 </div>
-
 
                 {/* Map View */}
                 {/* <div className="w-2/5 border-l border-border">
@@ -373,7 +438,7 @@ const PropertyListings = () => {
 
               {/* Mobile View */}
               <div className="lg:hidden">
-                {viewMode === 'list' ? (
+                {viewMode === "list" ? (
                   <div className="p-4">
                     {loading ? (
                       <div className="grid grid-cols-1 gap-4">
@@ -395,7 +460,11 @@ const PropertyListings = () => {
                         {filteredProperties?.map((property, index) => (
                           <div
                             key={property?._id}
-                            ref={index === filteredProperties?.length - 1 ? lastPropertyElementRef : null}
+                            ref={
+                              index === filteredProperties?.length - 1
+                                ? lastPropertyElementRef
+                                : null
+                            }
                           >
                             <PropertyCard
                               property={property}
@@ -407,7 +476,11 @@ const PropertyListings = () => {
 
                         {filteredProperties?.length === 0 && (
                           <div className="text-center py-12">
-                            <Icon name="Search" size={48} className="text-secondary mx-auto mb-4" />
+                            <Icon
+                              name="Search"
+                              size={48}
+                              className="text-secondary mx-auto mb-4"
+                            />
                             <h3 className="text-lg font-semibold text-text-primary mb-2">
                               No properties found
                             </h3>
