@@ -1,6 +1,7 @@
 import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Icon from '../AppIcon';
+import logo from '../../assets/namohomes-logo.svg';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -78,15 +79,14 @@ const Header = () => {
           <div className="flex-shrink-0">
             <Link
               to="/"
-              className="flex items-center space-x-2 micro-interaction"
+              className="flex items-center micro-interaction"
               aria-label="NAMOHOMES - Go to homepage"
             >
-              <div className="w-8 h-8 bg-primary rounded-md flex items-center justify-center">
-                <Icon name="Home" size={20} color="white" />
-              </div>
-              <span className="text-xl font-semibold text-text-primary font-heading">
-                NAMOHOMES
-              </span>
+              <img
+                src={logo}
+                alt="NamoHomes"
+                className="h-8 w-auto md:h-10 lg:h-12"
+              />
             </Link>
           </div>
 
