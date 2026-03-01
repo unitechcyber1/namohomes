@@ -29,11 +29,23 @@ export const searchProjects = async (params = {}) => {
 };
 
 /**
- * Get single project by ID
+ * Get single project by ID (MongoDB _id)
  */
 export const getProjectById = async (id) => {
   try {
     const { data } = await api.get(`/api/client/projects/${id}`);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
+
+/**
+ * Get single project by slug (for SEO-friendly URLs)
+ */
+export const getProjectBySlug = async (slug) => {
+  try {
+    const { data } = await api.get(`/api/client/projects/slug/${slug}`);
     return data;
   } catch (error) {
     throw error;

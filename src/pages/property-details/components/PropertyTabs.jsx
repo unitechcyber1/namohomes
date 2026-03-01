@@ -1,9 +1,10 @@
 // src/pages/property-details/components/PropertyTabs.jsx
-import React, { useRef } from 'react';
+import React, { useRef, useState } from 'react';
 import Icon from '../../../components/AppIcon';
 
 const PropertyTabs = ({ property, activeTab, onTabChange }) => {
   const mapRef = useRef(null);
+  const [descriptionExpanded, setDescriptionExpanded] = useState(false);
 
   const tabs = [
     { id: 'description', label: 'Description', icon: 'FileText' },
@@ -12,12 +13,65 @@ const PropertyTabs = ({ property, activeTab, onTabChange }) => {
     { id: 'schools', label: 'Schools', icon: 'GraduationCap' }
   ];
 
-  const renderDescription = () => (
+  const isHtml = (str) => {
+    if (!str || typeof str !== "string") return false;
+    return /<[a-z][\s\S]*>/i.test(str);
+  };
+
+  const renderDescription = () => {
+    const desc = property?.description;
+    const hasDescription = !!desc?.trim();
+    const descriptionContent = desc ? (
+      isHtml(desc) ? (
+        <div
+          className="prose prose-sm md:prose-base max-w-none prose-headings:text-text-primary prose-p:text-text-primary prose-li:text-text-primary prose-strong:text-text-primary prose-a:text-primary prose-a:no-underline hover:prose-a:underline"
+          dangerouslySetInnerHTML={{ __html: desc }}
+        />
+      ) : (
+        <div className="text-text-primary whitespace-pre-line leading-relaxed">
+          {desc}
+        </div>
+      )
+    ) : null;
+
+    return (
     <div className="prose max-w-none">
-      <div className="text-text-primary whitespace-pre-line leading-relaxed">
-        {property?.description}
-      </div>
-      
+      {hasDescription && (
+        <div className="relative">
+          <div
+            className={`overflow-hidden transition-[max-height] duration-300 ease-out ${
+              descriptionExpanded ? 'max-h-none' : 'max-h-48'
+            }`}
+          >
+            {descriptionContent}
+          </div>
+          {!descriptionExpanded && (
+            <div
+              className="absolute bottom-0 left-0 right-0 h-16 bg-gradient-to-t from-surface to-transparent pointer-events-none"
+              aria-hidden
+            />
+          )}
+          <button
+            type="button"
+            onClick={() => setDescriptionExpanded((prev) => !prev)}
+            className="mt-2 flex items-center gap-1.5 text-sm font-medium text-primary hover:text-primary-700 transition-colors"
+          >
+            {descriptionExpanded ? (
+              <>
+                <span>See less</span>
+                <Icon name="ChevronDown" size={16} className="rotate-180" />
+              </>
+            ) : (
+              <>
+                <span>See more</span>
+                <Icon name="ChevronDown" size={16} />
+              </>
+            )}
+          </button>
+        </div>
+      )}
+      {!hasDescription && descriptionContent}
+
       {property?.propertyHistory && property.propertyHistory.length > 0 && (
         <div className="mt-8">
           <h3 className="text-lg font-semibold text-text-primary mb-4">Price History</h3>
@@ -42,7 +96,8 @@ const PropertyTabs = ({ property, activeTab, onTabChange }) => {
         </div>
       )}
     </div>
-  );
+    );
+  };
 
   const renderAmenities = () => (
     <div>
@@ -50,7 +105,7 @@ const PropertyTabs = ({ property, activeTab, onTabChange }) => {
         {property?.amenities?.map((amenity, index) => (
           <div key={index} className="flex items-center space-x-3 p-3 bg-background rounded-md">
             <Icon name="Check" size={16} className="text-success flex-shrink-0" />
-            <span className="text-text-primary">{amenity}</span>
+            <span className="text-text-primary">{amenity?.name}</span>
           </div>
         ))}
       </div>

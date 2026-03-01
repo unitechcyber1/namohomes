@@ -8,12 +8,12 @@ module.exports = {
     extend: {
       colors: {
         // Primary Colors
-        'primary': '#2563EB', // Deep blue (primary) - blue-600
-        'primary-50': '#EFF6FF', // Very light blue (50-level shade) - blue-50
-        'primary-100': '#DBEAFE', // Light blue (100-level shade) - blue-100
-        'primary-500': '#3B82F6', // Medium blue (500-level shade) - blue-500
-        'primary-700': '#1D4ED8', // Dark blue (700-level shade) - blue-700
-        'primary-900': '#1E3A8A', // Very dark blue (900-level shade) - blue-900
+        'primary': '#1d3a78', // Primary brand blue
+        'primary-50': '#E8EEF6', // Very light blue (50-level shade)
+        'primary-100': '#D1DEEE', // Light blue (100-level shade)
+        'primary-500': '#2a4a8a', // Medium blue (500-level shade)
+        'primary-700': '#172d5c', // Dark blue (700-level shade, hover)
+        'primary-900': '#0f1f3d', // Very dark blue (900-level shade)
 
         // Secondary Colors
         'secondary': '#64748B', // Sophisticated slate (secondary) - slate-500

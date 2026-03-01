@@ -5,7 +5,9 @@ import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
 import Image from '../../components/AppImage';
 
-// Import components
+import { getProjectById, getProjectBySlug } from '../../service/projectService';
+import { mapProjectToPropertyDetails } from '../../utils/mapProjectToPropertyDetails';
+
 import ImageGallery from './components/ImageGallery';
 import PropertyOverview from './components/PropertyOverview';
 import PropertyTabs from './components/PropertyTabs';
@@ -18,162 +20,45 @@ const PropertyDetails = () => {
   const [searchParams] = useSearchParams();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
+  const [error, setError] = useState(null);
   const [isSaved, setIsSaved] = useState(false);
   const [activeTab, setActiveTab] = useState('description');
   const [showMortgageCalculator, setShowMortgageCalculator] = useState(false);
   const [showContactForm, setShowContactForm] = useState(false);
+  const [similarProperties, setSimilarProperties] = useState([]);
 
   const propertyId = searchParams?.get('id');
-
-  // Mock property data - Indian market
-  const mockProperty = {
-    id: 1,
-    title: "Spacious 3 BHK in Bandra West",
-    price: 8500000,
-    address: "Linking Road, Bandra West, Mumbai, Maharashtra 400050",
-    bedrooms: 3,
-    bathrooms: 2,
-    sqft: 1450,
-    carpetArea: 1200,
-    propertyType: "flat",
-    yearBuilt: 2019,
-    facing: "East",
-    floor: "12th Floor",
-    totalFloors: 25,
-    furnishing: "Semi Furnished",
-    parkingSpaces: 2,
-    images: [
-      "https://images.pexels.com/photos/1643383/pexels-photo-1643383.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pixabay.com/photo/2017/03/28/12/13/chairs-2181968_1280.jpg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.unsplash.com/photo-1560448204-e02f11c3d0e2?w=800&h=600&fit=crop",
-      "https://images.pexels.com/photos/2121121/pexels-photo-2121121.jpeg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.pixabay.com/photo/2016/12/30/07/59/kitchen-1940174_1280.jpg?auto=compress&cs=tinysrgb&w=800",
-      "https://images.unsplash.com/photo-1502672260266-1c1ef2d93688?w=800&h=600&fit=crop"
-    ],
-    agent: {
-      name: "Rajesh Kumar",
-      phone: "+91 98765 43210",
-      email: "rajesh.kumar@realestate.in",
-      avatar: "https://randomuser.me/api/portraits/men/32.jpg",
-      rating: 4.8,
-      reviewsCount: 127,
-      bio: "Rajesh is a dedicated real estate professional with over 10 years of experience in Mumbai\'s premium property market. He specializes in luxury apartments and penthouses in Bandra and Juhu.",
-      reraNumber: "A51234567890"
-    },
-    coordinates: { lat: 19.0596, lng: 72.8295 },
-    daysOnMarket: 15,
-    propertyId: "PROP-MUM-2024-001234",
-    description: `Beautiful 3 BHK apartment in prime Bandra West location with stunning city and sea views. This spacious flat features a well-designed layout with ample natural light, cross ventilation, and modern amenities.
-
-The apartment includes a spacious living room, modular kitchen with chimney and hob, master bedroom with attached bathroom, two additional bedrooms, and a common bathroom. The property comes with a dedicated parking space for two cars.
-
-Located in a premium gated community with 24/7 security, power backup, lift, and covered parking. The building is well-maintained and offers excellent amenities. Close to top schools, hospitals, shopping centers, and restaurants. Excellent connectivity to Western Express Highway and Bandra-Worli Sea Link.`,
-    amenities: [
-      "Gated Community",
-      "24/7 Security",
-      "CCTV Surveillance",
-      "Lift/Elevator",
-      "Power Backup",
-      "Water Storage",
-      "Covered Parking",
-      "Gym/Fitness Center",
-      "Clubhouse",
-      "Children Play Area",
-      "Landscaped Garden",
-      "Intercom Facility",
-      "Piped Gas",
-      "Rainwater Harvesting",
-      "Vastu Compliant"
-    ],
-    schools: [
-      {
-        name: "Dhirubhai Ambani International School",
-        type: "International School",
-        rating: 9,
-        distance: "1.2 km"
-      },
-      {
-        name: "Jamnabai Narsee School",
-        type: "ICSE School",
-        rating: 8,
-        distance: "0.8 km"
-      },
-      {
-        name: "St. Joseph\'s High School",
-        type: "CBSE School",
-        rating: 8,
-        distance: "1.5 km"
-      }
-    ],
-    neighborhood: {
-      walkScore: 92,
-      transitScore: 85,
-      bikeScore: 78,
-      nearbyPlaces: [
-        { name: "Bandra Bandstand", type: "Park", distance: "1.5 km" },
-        { name: "Linking Road Market", type: "Shopping", distance: "0.3 km" },
-        { name: "Bandra Railway Station", type: "Transit", distance: "1.0 km" },
-        { name: "Lilavati Hospital", type: "Hospital", distance: "2.0 km" },
-        { name: "DMart", type: "Grocery", distance: "0.5 km" }
-      ]
-    },
-    propertyHistory: [
-      { date: "2024-01-15", event: "Listed for Sale", price: 8500000 },
-      { date: "2023-12-01", event: "Price Reduction", price: 8800000 },
-      { date: "2023-10-20", event: "Listed for Sale", price: 9000000 }
-    ],
-    virtualTour: "https://example.com/virtual-tour",
-    video: "https://example.com/property-video"
-  };
-
-  const similarProperties = [
-    {
-      id: 2,
-      title: "Luxury Villa in Whitefield",
-      price: 12500000,
-      address: "ITPL Main Road, Whitefield, Bangalore",
-      bedrooms: 4,
-      bathrooms: 3,
-      sqft: 2800,
-      images: ["https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=800"]
-    },
-    {
-      id: 3,
-      title: "Cozy Studio Apartment",
-      price: 3200000,
-      address: "Koramangala 5th Block, Bangalore",
-      bedrooms: 1,
-      bathrooms: 1,
-      sqft: 550,
-      images: ["https://images.pixabay.com/photo/2016/11/18/17/20/living-room-1835923_1280.jpg?auto=compress&cs=tinysrgb&w=800"]
-    },
-    {
-      id: 4,
-      title: "Premium Penthouse",
-      price: 35000000,
-      address: "Golf Course Road, Gurgaon",
-      bedrooms: 4,
-      bathrooms: 4,
-      sqft: 3200,
-      images: ["https://images.unsplash.com/photo-1545324418-cc1a3fa10c00?w=800&h=600&fit=crop"]
-    }
-  ];
+  const slug = searchParams?.get('slug');
 
   useEffect(() => {
     const fetchProperty = async () => {
       setLoading(true);
-      // Simulate API call
-      setTimeout(() => {
-        setProperty(mockProperty);
+      setError(null);
+      try {
+        const raw = slug
+          ? await getProjectBySlug(slug)
+          : await getProjectById(propertyId);
+        const data = raw?.data ?? raw;
+        const mapped = mapProjectToPropertyDetails(data);
+        setProperty(mapped);
         setIsSaved(false);
+        const similar = data?.similarProjects ?? data?.similar ?? [];
+        setSimilarProperties(Array.isArray(similar) ? similar.map(mapProjectToPropertyDetails) : []);
+      } catch (err) {
+        setError(err?.response?.data?.message || err?.message || 'Failed to load property');
+        setProperty(null);
+      } finally {
         setLoading(false);
-      }, 1000);
+      }
     };
 
-    if (propertyId) {
+    if (propertyId || slug) {
       fetchProperty();
+    } else {
+      setLoading(false);
+      setProperty(null);
     }
-  }, [propertyId]);
+  }, [propertyId, slug]);
 
   const handleSave = () => {
     setIsSaved(!isSaved);
@@ -220,10 +105,10 @@ Located in a premium gated community with 24/7 security, power backup, lift, and
             <div className="text-center">
               <Icon name="Home" size={64} className="text-secondary mx-auto mb-4" />
               <h1 className="text-2xl font-bold text-text-primary mb-2">
-                Property Not Found
+                {error ? 'Something went wrong' : 'Property Not Found'}
               </h1>
               <p className="text-text-secondary mb-6">
-                The property you're looking for doesn't exist or has been removed.
+                {error || "The property you're looking for doesn't exist or has been removed."}
               </p>
               <Link
                 to="/property-listings"
@@ -302,21 +187,22 @@ Located in a premium gated community with 24/7 security, power backup, lift, and
           </div>
         </div>
 
-        {/* Main Content */}
+        {/* Main Content - Container */}
         <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-6">
+          {/* ImageGallery inside container */}
+          <section className="mb-6">
+            <ImageGallery
+              images={property?.images}
+              title={property?.title}
+              virtualTour={property?.virtualTour}
+              video={property?.video}
+            />
+          </section>
+
           <div className="grid grid-cols-1 lg:grid-cols-3 gap-6">
             {/* Left Column - Main Content */}
             <div className="lg:col-span-2 space-y-6">
-              {/* Image Gallery */}
-              <ImageGallery 
-                images={property?.images}
-                title={property?.title}
-                virtualTour={property?.virtualTour}
-                video={property?.video}
-              />
-
-              {/* Property Overview */}
-              <PropertyOverview 
+              <PropertyOverview
                 property={property}
                 isSaved={isSaved}
                 onSave={handleSave}
@@ -324,102 +210,21 @@ Located in a premium gated community with 24/7 security, power backup, lift, and
                 onContact={() => setShowContactForm(true)}
               />
 
-              {/* Property Tabs */}
-              <PropertyTabs 
+              <PropertyTabs
                 property={property}
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
               />
             </div>
 
-            {/* Right Column - Sidebar */}
-            <div className="space-y-6">
-              {/* Mortgage Calculator */}
-              <div className="hidden lg:block">
-                <MortgageCalculator 
-                  propertyPrice={property?.price}
+            {/* Right Column - Sticky Contact Form (reuses ContactForm) */}
+            <div className="lg:col-span-1">
+              <div className="lg:sticky lg:top-24">
+                <ContactForm
+                  property={property}
+                  agent={property?.agent}
+                  variant="inline"
                 />
-              </div>
-
-              {/* Mobile Mortgage Calculator Toggle */}
-              <div className="lg:hidden">
-                <button
-                  onClick={() => setShowMortgageCalculator(!showMortgageCalculator)}
-                  className="w-full flex items-center justify-between p-4 bg-surface border border-border rounded-lg hover:shadow-elevation-2 transition-all duration-200"
-                >
-                  <div className="flex items-center space-x-3">
-                    <Icon name="Calculator" size={20} className="text-primary" />
-                    <span className="font-medium text-text-primary">Mortgage Calculator</span>
-                  </div>
-                  <Icon 
-                    name="ChevronDown" 
-                    size={16} 
-                    className={`text-text-secondary transition-transform duration-200 ${
-                      showMortgageCalculator ? 'rotate-180' : ''
-                    }`} 
-                  />
-                </button>
-                {showMortgageCalculator && (
-                  <div className="mt-4">
-                    <MortgageCalculator 
-                      propertyPrice={property?.price}
-                    />
-                  </div>
-                )}
-              </div>
-
-              {/* Agent Contact Card */}
-              <div className="card p-6">
-                <div className="flex items-center space-x-4 mb-4">
-                  <Image
-                    src={property?.agent?.avatar}
-                    alt={property?.agent?.name}
-                    className="w-16 h-16 rounded-full object-cover"
-                  />
-                  <div className="flex-1">
-                    <h3 className="font-semibold text-text-primary">{property?.agent?.name}</h3>
-                    <div className="flex items-center space-x-1 mb-1">
-                      <div className="flex items-center">
-                        {[...Array(5)]?.map((_, i) => (
-                          <Icon
-                            key={i}
-                            name="Star"
-                            size={14}
-                            className={i < Math.floor(property?.agent?.rating) ? 'text-warning fill-current' : 'text-secondary-300'}
-                          />
-                        ))}
-                      </div>
-                      <span className="text-sm text-text-secondary">
-                        {property?.agent?.rating} ({property?.agent?.reviewsCount} reviews)
-                      </span>
-                    </div>
-                  </div>
-                </div>
-                
-                <p className="text-sm text-text-secondary mb-4">
-                  {property?.agent?.bio}
-                </p>
-                
-                <div className="space-y-3">
-                  <button
-                    onClick={() => setShowContactForm(true)}
-                    className="w-full flex items-center justify-center space-x-2 bg-primary text-white py-3 rounded-md hover:bg-primary-700 transition-all duration-200"
-                  >
-                    <Icon name="MessageCircle" size={16} />
-                    <span>Send Message</span>
-                  </button>
-                  
-                  <div className="grid grid-cols-2 gap-2">
-                    <button className="flex items-center justify-center space-x-2 bg-accent-100 text-accent-600 py-2 rounded-md hover:bg-accent hover:text-white transition-all duration-200">
-                      <Icon name="Phone" size={16} />
-                      <span className="text-sm">Call</span>
-                    </button>
-                    <button className="flex items-center justify-center space-x-2 bg-secondary-100 text-text-secondary py-2 rounded-md hover:bg-secondary-200 transition-all duration-200">
-                      <Icon name="Calendar" size={16} />
-                      <span className="text-sm">Schedule</span>
-                    </button>
-                  </div>
-                </div>
               </div>
             </div>
           </div>
@@ -430,11 +235,12 @@ Located in a premium gated community with 24/7 security, power backup, lift, and
           </div>
         </div>
       </main>
-      {/* Contact Form Modal */}
+      {/* Contact Form Modal (mobile / when opened from buttons) */}
       {showContactForm && (
         <ContactForm
           property={property}
           agent={property?.agent}
+          variant="modal"
           onClose={() => setShowContactForm(false)}
         />
       )}

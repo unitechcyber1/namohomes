@@ -14,7 +14,7 @@ const PropertyCard = ({ property, saved, onSave }) => {
    const [showForm, setShowForm] = useState(false);
   return (
     <Link
-      to={`/property-details?id=${property?.id}`}
+      to={`/property-details?id=${property?._id}`}
       className="card overflow-hidden hover:shadow-elevation-2 transition-all duration-200 ease-out group"
     >
       {/* Property Image */}
