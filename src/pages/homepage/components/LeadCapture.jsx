@@ -2,9 +2,9 @@ import React, { useState } from 'react';
 // import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
 import { MessageCircle, Phone, Send, CheckCircle, ArrowRight } from 'lucide-react';
-import  Button  from '../../../components/ui/button';
-import  Input  from '../../../components/ui/input';
-import  Textarea from '../../../components/ui/textarea';
+import Button from '../../../components/ui/Button';
+import Input from '../../../components/ui/Input';
+import Textarea from '../../../components/ui/Textarea';
 import { toast } from 'sonner';
 
 export default function LeadCapture() {
