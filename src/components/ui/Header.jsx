@@ -5,9 +5,7 @@ import logo from '../../assets/namohomes-logo.svg';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
-  const [searchQuery, setSearchQuery] = useState('');
   const location = useLocation();
-  const userMenuRef = useRef(null);
   const mobileMenuRef = useRef(null);
 
   // Mock user data - in real app this would come from context/props
@@ -53,15 +51,6 @@ const Header = () => {
   useEffect(() => {
     setIsMobileMenuOpen(false);
   }, [location.pathname]);
-
-  const handleSearchSubmit = (e) => {
-    e.preventDefault();
-    if (searchQuery.trim()) {
-      // Navigate to property listings with search query
-      window.location.href = `/property-listings?search=${encodeURIComponent(searchQuery)}`;
-    }
-  };
-
 
   const isActiveRoute = (path) => {
     return location.pathname === path;
@@ -109,26 +98,21 @@ const Header = () => {
               )
             ))}
           </nav>
-        </div>
-        {/* Mobile Search Bar */}
-        <div className="md:hidden pb-4">
-          <form onSubmit={handleSearchSubmit}>
-            <div className="relative">
-              <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
-                <Icon name="Search" size={20} className="text-secondary" />
-              </div>
-              <input
-                type="text"
-                value={searchQuery}
-                onChange={(e) => setSearchQuery(e.target.value)}
-                placeholder="Search properties..."
-                className="block w-full pl-10 pr-4 py-2 border border-border rounded-md 
-                         focus:border-border-focus focus:ring-2 focus:ring-primary-500 
-                         transition-all duration-200 ease-out bg-background text-text-primary
-                         placeholder-text-secondary"
-              />
-            </div>
-          </form>
+
+          {/* Mobile menu button (hamburger) */}
+          <button
+            type="button"
+            onClick={() => setIsMobileMenuOpen((prev) => !prev)}
+            className="md:hidden p-2 rounded-md text-text-primary hover:bg-secondary-100 focus:outline-none focus:ring-2 focus:ring-primary-500 focus:ring-offset-2"
+            aria-label={isMobileMenuOpen ? 'Close menu' : 'Open menu'}
+            aria-expanded={isMobileMenuOpen}
+          >
+            {isMobileMenuOpen ? (
+              <Icon name="X" size={24} />
+            ) : (
+              <Icon name="Menu" size={24} />
+            )}
+          </button>
         </div>
       </div>
 
