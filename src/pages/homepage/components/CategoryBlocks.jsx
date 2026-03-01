@@ -75,7 +75,7 @@ export default function CategoryBlocks() {
                                 className={isLarge ? 'lg:col-span-2' : ''}
                             >
                                 {/* to={createPageUrl(`Listings?category=${category.slug}`)} */}
-                                {/* <Link > */}
+                               <Link to={`/listings/${category.slug}`}>
                                 <div className={`group relative overflow-hidden rounded-2xl ${isLarge ? 'h-72' : 'h-64'}`}>
                                     <img
                                         src={category.image_url || defaultCategories.find(c => c.slug === category.slug)?.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80'}
@@ -106,7 +106,7 @@ export default function CategoryBlocks() {
                                         </div>
                                     </div>
                                 </div>
-                                {/* </Link> */}
+                                </Link> 
                             </motion.div>
                         );
                     })}
