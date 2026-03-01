@@ -11,34 +11,45 @@ import ContactForm from "../../pages/property-details/components/ContactForm";
 
 
 const PropertyCard = ({ property, saved, onSave }) => {
-   const [showForm, setShowForm] = useState(false);
+  const [showForm, setShowForm] = useState(false);
+
+  const detailUrl = `/property-details?id=${property?._id}`;
+
   return (
-    <Link
-      to={`/property-details?id=${property?._id}`}
-      className="card overflow-hidden hover:shadow-elevation-2 transition-all duration-200 ease-out group"
-    >
-      {/* Property Image */}
-      <div className="relative h-56 overflow-hidden">
-        <Image
-          src={property?.images?.[0]?.image?.s3_link || property?.images?.[0]?.image?.name}
-          alt={property?.images?.[0]?.alt}
-          className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
-        />
+    <div className="card overflow-hidden hover:shadow-elevation-2 transition-all duration-200 ease-out group">
+      {/* Property Image - clickable link to detail */}
+      <div className="relative">
+        <Link to={detailUrl} className="block">
+          <div className="relative h-56 overflow-hidden">
+            <Image
+              src={property?.images?.[0]?.image?.s3_link || property?.images?.[0]?.image?.name}
+              alt={property?.images?.[0]?.alt}
+              className="w-full h-full object-cover group-hover:scale-105 transition-transform duration-300"
+            />
 
-        {/* Featured Badge */}
-        {property?.tagline && (
-          <div className="absolute top-3 left-3 px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">
-            FEATURED
+            {/* Featured Badge */}
+            {property?.tagline && (
+              <div className="absolute top-3 left-3 px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">
+                FEATURED
+              </div>
+            )}
+
+            {/* Property Type */}
+            <div className="absolute bottom-3 left-3 px-2 py-1 bg-surface/90 backdrop-blur-sm text-text-primary text-xs font-medium rounded">
+              {property?.project_type}
+            </div>
           </div>
-        )}
+        </Link>
 
-        {/* Save Button */}
+        {/* Save Button - outside Link so it doesn't navigate */}
         <button
+          type="button"
           onClick={(e) => {
             e.preventDefault();
+            e.stopPropagation();
             onSave(property?.id);
           }}
-          className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center
+          className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center z-10
             transition-all duration-200 ease-out ${saved
               ? "bg-error text-white"
               : "bg-surface/90 text-text-secondary hover:bg-surface hover:text-error"
@@ -50,16 +61,11 @@ const PropertyCard = ({ property, saved, onSave }) => {
             fill={saved ? "currentColor" : "none"}
           />
         </button>
-
-        {/* Property Type */}
-        <div className="absolute bottom-3 left-3 px-2 py-1 bg-surface/90 backdrop-blur-sm text-text-primary text-xs font-medium rounded">
-          {property?.project_type}
-        </div>
       </div>
 
       {/* Property Details */}
       <div className="p-5">
-        <div className="mb-3">
+        <Link to={detailUrl} className="block mb-3">
           <h3 className="text-lg font-semibold text-text-primary mb-2 group-hover:text-primary transition-colors duration-200">
             {property?.name}
           </h3>
@@ -67,35 +73,38 @@ const PropertyCard = ({ property, saved, onSave }) => {
             <Icon name="MapPin" size={14} className="mr-1 flex-shrink-0" />
             {property?.location?.address}
           </p>
-        </div>
+        </Link>
 
         <div className="mb-4 flex items-center justify-between">
-  <p className="text-2xl font-bold text-primary">
-    ₹{property?.starting_price}
-  </p>
+          <Link to={detailUrl} className="text-2xl font-bold text-primary hover:underline">
+            ₹{property?.starting_price}
+          </Link>
 
-  <button
-  onClick={(e) => {
-    e.preventDefault();   
-    e.stopPropagation();  
-    setShowForm(true);
-  }}
- className="px-5 py-2 border border-blue-600 bg-white text-blue-600 rounded-md hover:bg-blue-600 hover:text-white transition duration-200"
+          <button
+            type="button"
+            onClick={(e) => {
+              e.preventDefault();
+              e.stopPropagation();
+              setShowForm(true);
+            }}
+            className="px-5 py-2 border border-primary bg-white text-primary rounded-md hover:bg-primary hover:text-white transition duration-200"
+          >
+            Enquire Now
+          </button>
+        </div>
 
-
->
-  Enquire Now
-</button>
-
-</div>
-
-{showForm && (
-  <ContactForm
-          // optional (if you want property data)
-    onClose={() => setShowForm(false)}  // important for closing
-  />
-)}
-
+      {showForm && (
+        <ContactForm
+          property={{
+            ...property,
+            title: property?.title ?? property?.name,
+            address: property?.address ?? property?.location?.address,
+          }}
+          agent={property?.agent}
+          variant="modal"
+          onClose={() => setShowForm(false)}
+        />
+      )}
 
         {/* <div className="flex items-center justify-between mb-4 pb-4 border-b border-border">
           <div className="flex items-center text-sm text-text-secondary">
@@ -114,8 +123,8 @@ const PropertyCard = ({ property, saved, onSave }) => {
           </div>
         </div> */}
 
-        {/* Agent */}
-        {/* <div className="flex items-center justify-between">
+      {/* Agent */}
+      {/* <div className="flex items-center justify-between">
           <div className="flex items-center space-x-2">
             <Image
               src={property?.agent?.photo}
@@ -133,7 +142,7 @@ const PropertyCard = ({ property, saved, onSave }) => {
           </div>
         </div> */}
       </div>
-    </Link>
+    </div>
   );
 };
 

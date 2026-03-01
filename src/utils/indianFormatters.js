@@ -115,10 +115,14 @@ export const INDIAN_AMENITIES = [
 
 // Popular search tags for Indian market
 export const INDIAN_SEARCH_TAGS = [
-  'Flats in Gurgaon',
-  'Villas in Gurugram',
-  'Apartments in Delhi NCR',
-  'Commercial Space in Gurgaon',
-  'Budget Homes under ₹50L',
-  'Luxury Properties'
+  // 'Flats in Gurgaon',
+  // 'Villas in Gurugram',
+  // 'Apartments in Delhi NCR',
+  // 'Commercial Space in Gurgaon',
+  // 'Budget Homes under ₹50L',
+  // 'Luxury Properties'
+  'Golf Course Road',
+  'Golf Course Extension Road',
+  'SPR Road',
+  'Dwarka Expressway',
 ];
