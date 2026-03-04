@@ -1,8 +1,10 @@
-import React from 'react';
-import { Link } from 'react-router-dom';
-import Icon from '../../../components/AppIcon';
+import React from "react";
+import { Link } from "react-router-dom";
+import Icon from "../../../components/AppIcon";
+import { Facebook, Twitter, Instagram, Linkedin } from "lucide-react";
 import { createPageUrl } from "../../../utils/createPageUrl";
-import { useState, useEffect } from 'react';
+import { useState, useEffect } from "react";
+import logo from "../../../assets/namohomes-logo.svg"
 const Footer = () => {
   const currentYear = new Date().getFullYear();
   const [categories, setCategories] = useState([]);
@@ -13,8 +15,8 @@ const Footer = () => {
         { label: "Search Properties", path: "/property-listings" },
         { label: "Mortgage Calculator", path: "/mortgage-calculator" },
         { label: "Buyer\'s Guide", path: "/buyers-guide" },
-        { label: "Neighborhood Info", path: "/neighborhoods" }
-      ]
+        { label: "Neighborhood Info", path: "/neighborhoods" },
+      ],
     },
     {
       title: "For Sellers",
@@ -22,8 +24,8 @@ const Footer = () => {
         { label: "List Your Property", path: "/list-property" },
         { label: "Home Valuation", path: "/home-valuation" },
         { label: "Seller\'s Guide", path: "/sellers-guide" },
-        { label: "Market Reports", path: "/market-reports" }
-      ]
+        { label: "Market Reports", path: "/market-reports" },
+      ],
     },
     {
       title: "For Agents",
@@ -31,8 +33,8 @@ const Footer = () => {
         { label: "Agent Dashboard", path: "/agent-dashboard" },
         { label: "Join Our Team", path: "/join-team" },
         { label: "Agent Resources", path: "/agent-resources" },
-        { label: "Training Center", path: "/training" }
-      ]
+        { label: "Training Center", path: "/training" },
+      ],
     },
     {
       title: "Company",
@@ -40,9 +42,9 @@ const Footer = () => {
         { label: "About Us", path: "/about" },
         { label: "Contact", path: "/contact" },
         { label: "Careers", path: "/careers" },
-        { label: "Press", path: "/press" }
-      ]
-    }
+        { label: "Press", path: "/press" },
+      ],
+    },
   ];
   useEffect(() => {
     const loadCategories = async () => {
@@ -59,18 +61,45 @@ const Footer = () => {
 
   const defaultCategories = [
     //   { name: 'Coworking', slug: 'coworking', description: 'Modern shared workspaces', icon: 'coworking', image: 'https://images.unsplash.com/photo-1497366216548-37526070297c?w=600&q=80' },
-    { name: 'Residential', slug: 'residential', description: 'Your dream home awaits', icon: 'residential', image: 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80' },
-    { name: 'Commercial', slug: 'commercial', description: 'Business properties', icon: 'commercial', image: 'https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80' },
-    { name: 'SCO Plots', slug: 'sco_plots', description: 'Shop-Cum-Office spaces', icon: 'sco_plots', image: 'https://images.unsplash.com/photo-1555636222-cae831e670b3?w=600&q=80' },
-    { name: 'Office Spaces', slug: 'office', description: 'Premium office solutions', icon: 'office', image: 'https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&q=80' },
-
+    {
+      name: "Residential",
+      slug: "residential",
+      description: "Your dream home awaits",
+      icon: "residential",
+      image:
+        "https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80",
+    },
+    {
+      name: "Commercial",
+      slug: "commercial",
+      description: "Business properties",
+      icon: "commercial",
+      image:
+        "https://images.unsplash.com/photo-1486406146926-c627a92ad1ab?w=600&q=80",
+    },
+    {
+      name: "SCO Plots",
+      slug: "sco_plots",
+      description: "Shop-Cum-Office spaces",
+      icon: "sco_plots",
+      image:
+        "https://images.unsplash.com/photo-1555636222-cae831e670b3?w=600&q=80",
+    },
+    {
+      name: "Office Spaces",
+      slug: "office",
+      description: "Premium office solutions",
+      icon: "office",
+      image:
+        "https://images.unsplash.com/photo-1497366811353-6870744d04b2?w=600&q=80",
+    },
   ];
 
   const socialLinks = [
     { name: "Facebook", icon: "Facebook", url: "https://facebook.com" },
     { name: "Twitter", icon: "Twitter", url: "https://twitter.com" },
     { name: "Instagram", icon: "Instagram", url: "https://instagram.com" },
-    { name: "LinkedIn", icon: "Linkedin", url: "https://linkedin.com" }
+    { name: "LinkedIn", icon: "Linkedin", url: "https://linkedin.com" },
   ];
 
   return (
@@ -88,7 +117,7 @@ const Footer = () => {
     //             <span className="text-xl font-semibold font-heading">NAMOHOMES</span>
     //           </div>
     //           <p className="text-secondary-300 mb-6 leading-relaxed">
-    //             Your trusted partner in real estate. We connect buyers, sellers, and agents 
+    //             Your trusted partner in real estate. We connect buyers, sellers, and agents
     //             to create successful property transactions in all over Gurgaon.
     //           </p>
 
@@ -162,7 +191,7 @@ const Footer = () => {
     //           <input
     //             type="email"
     //             placeholder="Enter your email"
-    //             className="flex-1 lg:w-64 px-4 py-2 bg-secondary-600 border border-secondary-500 
+    //             className="flex-1 lg:w-64 px-4 py-2 bg-secondary-600 border border-secondary-500
     //                      rounded-l-md text-white placeholder-secondary-300
     //                      focus:border-primary focus:ring-1 focus:ring-primary transition-all duration-200"
     //           />
@@ -182,26 +211,26 @@ const Footer = () => {
     //           © {currentYear} NAMOHOMES. All rights reserved.
     //         </div>
     //         <div className="flex flex-wrap items-center space-x-6 text-sm">
-    //           <Link 
-    //             to="/privacy" 
+    //           <Link
+    //             to="/privacy"
     //             className="text-secondary-300 hover:text-white transition-colors duration-200"
     //           >
     //             Privacy Policy
     //           </Link>
-    //           <Link 
-    //             to="/terms" 
+    //           <Link
+    //             to="/terms"
     //             className="text-secondary-300 hover:text-white transition-colors duration-200"
     //           >
     //             Terms of Service
     //           </Link>
-    //           <Link 
-    //             to="/cookies" 
+    //           <Link
+    //             to="/cookies"
     //             className="text-secondary-300 hover:text-white transition-colors duration-200"
     //           >
     //             Cookie Policy
     //           </Link>
-    //           <Link 
-    //             to="/accessibility" 
+    //           <Link
+    //             to="/accessibility"
     //             className="text-secondary-300 hover:text-white transition-colors duration-200"
     //           >
     //             Accessibility
@@ -213,29 +242,51 @@ const Footer = () => {
     // </footer>
     <footer className="bg-slate-900 text-white">
       <div className="max-w-7xl mx-auto px-4 py-16">
-        <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-4 gap-12">
+        <div className="grid grid-cols-1 md:grid-cols-2 mb-4 lg:grid-cols-4 gap-12">
           {/* Brand */}
-          <div>
-            <Link to={createPageUrl('Home')} className="flex items-center gap-2 mb-6">
-              <div className="w-10 h-10 bg-gradient-to-br from-amber-500 to-amber-600 rounded-xl flex items-center justify-center">
-              </div>
-              <span className="text-2xl font-bold text-white">NamoHomes</span>
-            </Link>
+          <div >
+            <Link
+                          to="/"
+                          className="flex items-center micro-interaction"
+                          aria-label="NAMOHOMES - Go to homepage"
+                        >
+                          <img
+                            src={logo}
+                            alt="NamoHomes"
+                            className="h-10 space-y-4 mb-5 filter brightness-0 invert"
+                          />
+                        </Link>
             <p className="text-slate-400 mb-6">
-              Your trusted partner for premium real estate across India. Verified listings, transparent deals.
+              Your trusted partner for premium real estate across India.
+              Verified listings, transparent deals.
             </p>
             <div className="flex gap-4">
-              <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors">
-                {/* <Facebook className="w-5 h-5" /> */}
+              <a
+                href="#"
+                className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors"
+              >
+                <Facebook className="w-5 h-5 text-white" />
               </a>
-              <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors">
-                {/* <Twitter className="w-5 h-5" /> */}
+
+              <a
+                href="#"
+                className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors"
+              >
+                <Twitter className="w-5 h-5 text-white" />
               </a>
-              <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors">
-                {/* <Instagram className="w-5 h-5" /> */}
+
+              <a
+                href="#"
+                className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors"
+              >
+                <Instagram className="w-5 h-5 text-white" />
               </a>
-              <a href="#" className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors">
-                {/* <Linkedin className="w-5 h-5" /> */}
+
+              <a
+                href="#"
+                className="w-10 h-10 bg-slate-800 rounded-full flex items-center justify-center hover:bg-amber-600 transition-colors"
+              >
+                <Linkedin className="w-5 h-5 text-white" />
               </a>
             </div>
           </div>
@@ -244,10 +295,38 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-6">Quick Links</h3>
             <ul className="space-y-3">
-              <li><Link to={createPageUrl('Home')} className="text-slate-400 hover:text-amber-400 transition-colors">Home</Link></li>
-              <li><Link to={createPageUrl('Listings')} className="text-slate-400 hover:text-amber-400 transition-colors">All Properties</Link></li>
-              <li><Link to={createPageUrl('Blog')} className="text-slate-400 hover:text-amber-400 transition-colors">Insights & Blog</Link></li>
-              <li><Link to={createPageUrl('Contact')} className="text-slate-400 hover:text-amber-400 transition-colors">Contact Us</Link></li>
+              <li>
+                <Link
+                  to="/"
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
+                >
+                  Home
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to="/property-listings"
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
+                >
+                  All Properties
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to={createPageUrl("Blog")}
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
+                >
+                  Insights & Blog
+                </Link>
+              </li>
+              <li>
+                <Link
+                  to={createPageUrl("Contact")}
+                  className="text-slate-400 hover:text-amber-400 transition-colors"
+                >
+                  Contact Us
+                </Link>
+              </li>
             </ul>
           </div>
 
@@ -255,14 +334,14 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-6">Property Types</h3>
             <ul className="space-y-3">
-              {categories.slice(0, 5).map(cat => (
+              {categories.slice(0, 5).map((cat) => (
                 <li key={cat.id}>
-                  {/* <Link
-                    to={createPageUrl(`Listings?category=${cat.slug}`)}
+                  <Link
+                    to={createPageUrl(`Listings/${cat.slug}`)}
                     className="text-slate-400 hover:text-amber-400 transition-colors"
-                  > */}
+                  >
                     {cat.name}
-                  {/* </Link> */}
+                  </Link>
                 </li>
               ))}
             </ul>
@@ -274,16 +353,25 @@ const Footer = () => {
             <ul className="space-y-4">
               <li className="flex items-start gap-3">
                 {/* <MapPin className="w-5 h-5 text-amber-500 mt-0.5" />*/}
-                <span className="text-slate-400">Phase 1 Metro Station, Golf course road, Gurugram, Haryana 122002</span>
+                <span className="text-slate-400">
+                  Phase 1 Metro Station, Golf course road, Gurugram, Haryana
+                  122002
+                </span>
               </li>
               <li>
-                <a href="tel:+919873040405" className="flex items-center gap-3 text-slate-400 hover:text-amber-400 transition-colors">
+                <a
+                  href="tel:+919873040405"
+                  className="flex items-center gap-3 text-slate-400 hover:text-amber-400 transition-colors"
+                >
                   {/* <Phone className="w-5 h-5 text-amber-500" /> */}
                   +91 98730 40405
                 </a>
               </li>
               <li>
-                <a href="mailto:namohomes@outlook.com" className="flex items-center gap-3 text-slate-400 hover:text-amber-400 transition-colors">
+                <a
+                  href="mailto:namohomes@outlook.com"
+                  className="flex items-center gap-3 text-slate-400 hover:text-amber-400 transition-colors"
+                >
                   {/* <Mail className="w-5 h-5 text-amber-500" /> */}
                   namohomes@outlook.com
                 </a>
@@ -300,9 +388,24 @@ const Footer = () => {
             © {new Date().getFullYear()} NamoHomes. All rights reserved.
           </p>
           <div className="flex gap-6 text-sm">
-            <a href="#" className="text-slate-500 hover:text-amber-400 transition-colors">Privacy Policy</a>
-            <a href="#" className="text-slate-500 hover:text-amber-400 transition-colors">Terms of Service</a>
-            <a href="#" className="text-slate-500 hover:text-amber-400 transition-colors">Sitemap</a>
+            <a
+              href="#"
+              className="text-slate-500 hover:text-amber-400 transition-colors"
+            >
+              Privacy Policy
+            </a>
+            <a
+              href="#"
+              className="text-slate-500 hover:text-amber-400 transition-colors"
+            >
+              Terms of Service
+            </a>
+            <a
+              href="#"
+              className="text-slate-500 hover:text-amber-400 transition-colors"
+            >
+              Sitemap
+            </a>
           </div>
         </div>
       </div>

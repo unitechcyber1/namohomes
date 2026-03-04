@@ -2,7 +2,6 @@
 import React from "react";
 import { BrowserRouter, Routes as RouterRoutes, Route } from "react-router-dom";
 import Test from "./pages/test";
-
 // import ScrollToTop from "components/ScrollToTop";
 // import ErrorBoundary from "components/ErrorBoundary";
 
@@ -14,6 +13,7 @@ import AuthPage from "./pages/login";
 // import AgentDashboard from "pages/agent-dashboard";
 // import UserProfileSettings from "pages/user-profile-settings";
 import NotFound from "./pages/NotFound";
+import Listingcategory from "./pages/homepage/components/Listingcategory";
 
 const Routes = () => {
   return (
@@ -25,7 +25,8 @@ const Routes = () => {
         <Route path="/property-listings" element={<PropertyListings />} />
         <Route path="/property-details" element={<PropertyDetails />} />
         <Route path="/login" element={<AuthPage />} />
-          <Route path="/test" element={<Test />} />
+        <Route path="/listings/:category" element={<Listingcategory />} />
+        <Route path="/test" element={<Test />} />
 
         {/*  <Route path="/agent-dashboard" element={<AgentDashboard />} />
           <Route path="/user-profile-settings" element={<UserProfileSettings />} />*/}

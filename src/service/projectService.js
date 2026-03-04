@@ -51,3 +51,20 @@ export const getProjectBySlug = async (slug) => {
     throw error;
   }
 };
+
+/**
+ * Get projects by category (residential, commercial, scoplots, etc.)
+ */
+export const getProjectsByCategory = async (category) => {
+  try {
+    const { data } = await api.get("/api/client/projects-page", {
+      params: {
+        category,
+      },
+    });
+
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};
