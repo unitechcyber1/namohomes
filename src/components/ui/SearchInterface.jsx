@@ -1,6 +1,12 @@
-import React, { useState, useRef, useEffect } from 'react';
+import React, { useState, useRef, useEffect, useCallback } from 'react';
+import { useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import { INDIAN_PROPERTY_TYPES, INDIAN_PRICE_RANGES, INDIAN_CITIES } from '../../utils/indianFormatters';
+import { searchProjects } from '../../service/projectService';
+
+const DEBOUNCE_MS = 350;
+const MIN_QUERY_LENGTH = 2;
+const SUGGESTIONS_LIMIT = 8;
 
 const SearchInterface = ({ variant = 'hero', onSearch, initialFilters = {} }) => {
   const [searchQuery, setSearchQuery] = useState(initialFilters?.query || '');
@@ -9,12 +15,63 @@ const SearchInterface = ({ variant = 'hero', onSearch, initialFilters = {} }) =>
   const [priceRange, setPriceRange] = useState(initialFilters?.priceRange || '');
   const [isFiltersOpen, setIsFiltersOpen] = useState(false);
   const [isLocationDropdownOpen, setIsLocationDropdownOpen] = useState(false);
+  const [suggestions, setSuggestions] = useState([]);
+  const [suggestionsLoading, setSuggestionsLoading] = useState(false);
+  const [suggestionsError, setSuggestionsError] = useState(null);
+  const [showSuggestions, setShowSuggestions] = useState(false);
+  const [totalCount, setTotalCount] = useState(0);
   const filtersRef = useRef(null);
   const locationRef = useRef(null);
+  const searchRef = useRef(null);
+  const requestIdRef = useRef(0);
+  const debounceRef = useRef(null);
+  const navigate = useNavigate();
 
   const propertyTypes = INDIAN_PROPERTY_TYPES;
   const priceRanges = INDIAN_PRICE_RANGES;
   const locationSuggestions = INDIAN_CITIES;
+
+  const fetchSuggestions = useCallback(async (name, city) => {
+    const id = ++requestIdRef.current;
+    setSuggestionsLoading(true);
+    setSuggestionsError(null);
+    try {
+      const params = { limit: SUGGESTIONS_LIMIT, page: 1 };
+      if (name?.trim()) params.name = name.trim();
+      if (city?.trim()) params.city = city.trim();
+      const res = await searchProjects(params);
+      if (id !== requestIdRef.current) return;
+      const list = res?.projects ?? res?.data?.projects ?? [];
+      const total = res?.totalCount ?? res?.data?.totalCount ?? 0;
+      setSuggestions(Array.isArray(list) ? list : []);
+      setTotalCount(total ?? 0);
+    } catch (err) {
+      if (id !== requestIdRef.current) return;
+      setSuggestionsError(err?.message || 'Search failed');
+      setSuggestions([]);
+    } finally {
+      if (id === requestIdRef.current) setSuggestionsLoading(false);
+    }
+  }, []);
+
+  useEffect(() => {
+    if (debounceRef.current) clearTimeout(debounceRef.current);
+    const hasQuery = searchQuery?.trim().length >= MIN_QUERY_LENGTH || location?.trim();
+    if (!hasQuery) {
+      setSuggestions([]);
+      setShowSuggestions(false);
+      setSuggestionsLoading(false);
+      return;
+    }
+    setSuggestionsLoading(true);
+    debounceRef.current = setTimeout(() => {
+      fetchSuggestions(searchQuery?.trim(), location?.trim());
+      setShowSuggestions(true);
+    }, DEBOUNCE_MS);
+    return () => {
+      if (debounceRef.current) clearTimeout(debounceRef.current);
+    };
+  }, [searchQuery, location, fetchSuggestions]);
 
   useEffect(() => {
     const handleClickOutside = (event) => {
@@ -24,6 +81,9 @@ const SearchInterface = ({ variant = 'hero', onSearch, initialFilters = {} }) =>
       if (locationRef?.current && !locationRef?.current?.contains(event?.target)) {
         setIsLocationDropdownOpen(false);
       }
+      if (searchRef?.current && !searchRef?.current?.contains(event?.target)) {
+        setShowSuggestions(false);
+      }
     };
 
     document.addEventListener('mousedown', handleClickOutside);
@@ -32,6 +92,7 @@ const SearchInterface = ({ variant = 'hero', onSearch, initialFilters = {} }) =>
 
   const handleSearch = (e) => {
     e?.preventDefault();
+    setShowSuggestions(false);
     const searchParams = {
       query: searchQuery,
       location,
@@ -42,12 +103,11 @@ const SearchInterface = ({ variant = 'hero', onSearch, initialFilters = {} }) =>
     if (onSearch) {
       onSearch(searchParams);
     } else {
-      // Default navigation to property listings
       const params = new URLSearchParams();
       Object.entries(searchParams)?.forEach(([key, value]) => {
         if (value) params?.append(key, value);
       });
-      window.location.href = `/property-listings?${params?.toString()}`;
+      navigate(`/property-listings?${params?.toString()}`);
     }
   };
 
@@ -56,44 +116,124 @@ const SearchInterface = ({ variant = 'hero', onSearch, initialFilters = {} }) =>
     setIsLocationDropdownOpen(false);
   };
 
+  const handleSelectProject = (project) => {
+    setShowSuggestions(false);
+    setSearchQuery(project?.name ?? '');
+    navigate(`/property-details?id=${project?._id}`);
+  };
+
+  const handleViewAllResults = () => {
+    setShowSuggestions(false);
+    const params = new URLSearchParams();
+    if (searchQuery?.trim()) params.set('query', searchQuery.trim());
+    if (location?.trim()) params.set('location', location.trim());
+    navigate(`/property-listings?${params?.toString()}`);
+  };
+
   const clearFilters = () => {
     setSearchQuery('');
     setLocation('');
     setPropertyType('');
     setPriceRange('');
+    setSuggestions([]);
+    setShowSuggestions(false);
   };
 
   const hasActiveFilters = searchQuery || location || propertyType || priceRange;
+
+  const renderSuggestionsDropdown = () => {
+    if (!showSuggestions) return null;
+    return (
+      <div className="absolute left-0 right-0 top-full mt-1 bg-surface border border-border rounded-lg shadow-elevation-3 z-dropdown max-h-80 overflow-y-auto">
+        {suggestionsLoading && (
+          <div className="flex items-center justify-center gap-2 py-6 text-text-secondary">
+            <Icon name="Loader2" size={20} className="animate-spin" />
+            <span>Searching...</span>
+          </div>
+        )}
+        {!suggestionsLoading && suggestionsError && (
+          <div className="px-4 py-3 text-sm text-error flex items-center gap-2">
+            <Icon name="AlertCircle" size={16} />
+            {suggestionsError}
+          </div>
+        )}
+        {!suggestionsLoading && !suggestionsError && suggestions.length === 0 && (searchQuery?.trim().length >= MIN_QUERY_LENGTH || location?.trim()) && (
+          <div className="px-4 py-4 text-sm text-text-secondary">No projects found. Try different keywords or city.</div>
+        )}
+        {!suggestionsLoading && !suggestionsError && suggestions.length > 0 && (
+          <>
+            <ul className="py-2">
+              {suggestions.map((project) => (
+                <li key={project?._id}>
+                  <button
+                    type="button"
+                    onClick={() => handleSelectProject(project)}
+                    className="w-full text-left px-4 py-3 hover:bg-secondary-100 flex flex-col gap-0.5 transition-colors"
+                  >
+                    <span className="font-medium text-text-primary">{project?.name}</span>
+                    <span className="text-sm text-text-secondary">
+                      {[project?.location?.city?.name, project?.location?.address].filter(Boolean).join(' · ') || '—'}
+                    </span>
+                    {project?.starting_price && (
+                      <span className="text-sm text-primary font-medium">₹{project.starting_price}</span>
+                    )}
+                  </button>
+                </li>
+              ))}
+            </ul>
+            {totalCount > suggestions.length && (
+              <div className="border-t border-border px-4 py-2">
+                <button
+                  type="button"
+                  onClick={handleViewAllResults}
+                  className="text-sm font-medium text-primary hover:underline w-full text-left"
+                >
+                  View all {totalCount} results →
+                </button>
+              </div>
+            )}
+          </>
+        )}
+      </div>
+    );
+  };
 
   if (variant === 'hero') {
     return (
       <div className="w-full max-w-4xl mx-auto">
         <form onSubmit={handleSearch} className="space-y-4">
-          {/* Main Search Bar */}
-          <div className="relative w-full">
-            <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
-              <Icon name="Search" size={24} className="text-secondary" />
+          {/* Main Search Bar + Suggestions */}
+          <div ref={searchRef} className="relative w-full">
+            <div className="relative w-full">
+              <div className="absolute inset-y-0 left-0 pl-4 flex items-center pointer-events-none">
+                <Icon name="Search" size={24} className="text-secondary" />
+              </div>
+
+              <input
+                type="text"
+                value={searchQuery}
+                onChange={(e) => setSearchQuery(e?.target?.value)}
+                onFocus={() => (searchQuery?.trim().length >= MIN_QUERY_LENGTH || location?.trim()) && setShowSuggestions(true)}
+                placeholder="Search by locality, landmark, project or builder..."
+                className="block w-full pl-12 pr-28 py-4 text-lg border border-border rounded-lg
+                 focus:border-border-focus focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
+                 transition-all duration-200 ease-out bg-surface text-text-primary
+                 placeholder-text-secondary shadow-elevation-1"
+                autoComplete="off"
+                aria-autocomplete="list"
+                aria-expanded={showSuggestions && suggestions.length > 0}
+              />
+              <button
+                type="submit"
+                className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white
+                 px-4 py-2 rounded-md text-base font-semibold hover:bg-primary-600
+                 transition-all duration-200 ease-out shadow-elevation-2 hover:shadow-elevation-3"
+              >
+                Search
+              </button>
             </div>
 
-            <input
-              type="text"
-              value={searchQuery}
-              onChange={(e) => setSearchQuery(e?.target?.value)}
-              placeholder="Search by locality, landmark, project or builder..."
-              className="block w-full pl-12 pr-28 py-4 text-lg border border-border rounded-lg
-               focus:border-border-focus focus:ring-2 focus:ring-primary-500 focus:ring-offset-2
-               transition-all duration-200 ease-out bg-surface text-text-primary
-               placeholder-text-secondary shadow-elevation-1"
-            />
-          {/* Search Button */}
-            <button
-              type="submit"
-              className="absolute right-2 top-1/2 -translate-y-1/2 bg-primary text-white
-               px-4 py-2 rounded-md text-base font-semibold hover:bg-primary-600
-               transition-all duration-200 ease-out shadow-elevation-2 hover:shadow-elevation-3"
-            >
-              Search
-            </button>
+            {renderSuggestionsDropdown()}
           </div>
           {/* Filter Controls */}
           <div className="flex flex-wrap gap-3 items-center">
