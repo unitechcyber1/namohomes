@@ -105,7 +105,7 @@ const PropertyTabs = ({ property, activeTab, onTabChange }) => {
         {property?.amenities?.map((amenity, index) => (
           <div key={index} className="flex items-center space-x-3 p-3 bg-background rounded-md">
             <Icon name="Check" size={16} className="text-success flex-shrink-0" />
-            <span className="text-text-primary">{amenity?.name}</span>
+            <span className="text-text-primary">{amenity}</span>
           </div>
         ))}
       </div>

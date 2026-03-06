@@ -59,7 +59,6 @@ const PropertyDetails = () => {
       setProperty(null);
     }
   }, [propertyId, slug]);
-
   const handleSave = () => {
     setIsSaved(!isSaved);
     // In real app, sync with backend
