@@ -1,25 +1,17 @@
 import React, { useState, useEffect } from 'react';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
+import { formatPriceForDisplay } from '../../../utils/indianFormatters';
 
-const MapView = ({ 
-  properties = [], 
-  selectedProperty, 
+const MapView = ({
+  properties = [],
+  selectedProperty,
   onPropertySelect,
-  isMobile = false 
+  isMobile = false
 }) => {
   const [mapCenter, setMapCenter] = useState({ lat: 40.7128, lng: -74.0060 });
   const [zoom, setZoom] = useState(11);
   const [hoveredProperty, setHoveredProperty] = useState(null);
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-US', {
-      style: 'currency',
-      currency: 'USD',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
 
   // Calculate map bounds based on properties
   useEffect(() => {
@@ -94,7 +86,7 @@ const MapView = ({
                       ? 'bg-accent text-white scale-105' :'bg-surface text-text-primary hover:bg-primary hover:text-white'
                   }`}
                 >
-                  {formatPrice(property.price).replace('.00', '')}
+                  {formatPriceForDisplay(property?.price ?? property?.starting_price).replace('.00', '')}
                 </button>
 
                 {/* Property Card Popup */}
@@ -126,7 +118,7 @@ const MapView = ({
                           {property.title}
                         </h4>
                         <p className="text-lg font-bold text-primary mb-2">
-                          {formatPrice(property.price)}
+                          {formatPriceForDisplay(property?.price ?? property?.starting_price)}
                         </p>
                         <p className="text-xs text-text-secondary mb-2 truncate">
                           {property.address}

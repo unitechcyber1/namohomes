@@ -2,7 +2,7 @@ import React, { useState } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
-import { formatINR, formatArea } from '../../../utils/indianFormatters';
+import { formatArea, formatPriceForDisplay } from '../../../utils/indianFormatters';
 
 const PropertyCard = ({ 
   property, 
@@ -34,10 +34,6 @@ const PropertyCard = ({
   );
 
   const displayImages = shouldUpdateImages ? updatedImages : (property?.images || updatedImages);
-
-  const formatPrice = (price) => {
-    return formatINR(price);
-  };
 
   const formatNumber = (num) => {
     return new Intl.NumberFormat('en-IN')?.format(num);
@@ -160,7 +156,7 @@ const PropertyCard = ({
                 </div>
                 <div className="text-right ml-4">
                   <p className="text-xl font-bold text-primary">
-                    {formatPrice(property?.price)}
+                    {formatPriceForDisplay(property?.price ?? property?.starting_price)}
                   </p>
                 </div>
               </div>
@@ -316,7 +312,7 @@ const PropertyCard = ({
 
         <div className="mb-3">
           <p className="text-2xl font-bold text-primary">
-            {formatPrice(property?.price)}
+            {formatPriceForDisplay(property?.price ?? property?.starting_price)}
           </p>
         </div>
 

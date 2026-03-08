@@ -2,6 +2,7 @@
 import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
+import { formatPriceForDisplay } from '../../../utils/indianFormatters';
 
 const PropertyOverview = ({
   property,
@@ -10,14 +11,6 @@ const PropertyOverview = ({
   onShare,
   onContact
 }) => {
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
-  };
 
   const formatNumber = (num) => {
     return new Intl.NumberFormat('en-IN').format(num);
@@ -46,7 +39,7 @@ const PropertyOverview = ({
           </div>
 
           <p className="text-3xl lg:text-4xl font-bold text-primary mb-3">
-            {formatPrice(property?.price)}
+            {formatPriceForDisplay(property?.price ?? property?.starting_price)}
           </p>
 
           <div className="flex items-center space-x-2 text-text-secondary mb-4">

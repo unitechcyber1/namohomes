@@ -1,7 +1,7 @@
 import React, { useState, useRef, useEffect, useCallback } from 'react';
 import { useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
-import { INDIAN_PROPERTY_TYPES, INDIAN_PRICE_RANGES, INDIAN_CITIES } from '../../utils/indianFormatters';
+import { INDIAN_PROPERTY_TYPES, INDIAN_PRICE_RANGES, INDIAN_CITIES, formatPriceForDisplay } from '../../utils/indianFormatters';
 import { searchProjects } from '../../service/projectService';
 
 const DEBOUNCE_MS = 350;
@@ -174,9 +174,7 @@ const SearchInterface = ({ variant = 'hero', onSearch, initialFilters = {} }) =>
                     <span className="text-sm text-text-secondary">
                       {[project?.location?.city?.name, project?.location?.address].filter(Boolean).join(' · ') || '—'}
                     </span>
-                    {project?.starting_price && (
-                      <span className="text-sm text-primary font-medium">₹{project.starting_price}</span>
-                    )}
+                    <span className="text-sm text-primary font-medium">{formatPriceForDisplay(project?.starting_price)}</span>
                   </button>
                 </li>
               ))}

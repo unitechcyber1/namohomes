@@ -3,7 +3,7 @@ import React,{useState} from "react";
 import { Link } from "react-router-dom";
 import Icon from "../AppIcon";
 import Image from "../AppImage";
-import { formatINR, formatArea } from "../../utils/indianFormatters";
+import { formatINR, formatArea, formatPriceForDisplay } from "../../utils/indianFormatters";
 import ContactForm from "../../pages/property-details/components/ContactForm";
 
 
@@ -77,7 +77,7 @@ const PropertyCard = ({ property, saved, onSave }) => {
 
         <div className="mb-4 flex items-center justify-between">
           <Link to={detailUrl} className="text-2xl font-bold text-primary hover:underline">
-            ₹{property?.starting_price}
+            {formatPriceForDisplay(property?.starting_price)}
           </Link>
 
           <button

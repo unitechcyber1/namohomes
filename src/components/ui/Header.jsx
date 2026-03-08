@@ -79,24 +79,36 @@ const Header = () => {
             </Link>
           </div>
 
-          {/* Desktop Navigation */}
-          <nav className="hidden md:flex items-center space-x-6">
-            {navigationItems.map((item) => (
-              shouldShowNavItem(item.roles) && (
-                <Link
-                  key={item.path}
-                  to={item.path}
-                  className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium 
-                           transition-all duration-200 ease-out micro-interaction
-                           ${isActiveRoute(item.path)
-                      ? 'bg-primary-100 text-primary border border-primary-500' : 'text-text-secondary hover:text-text-primary hover:bg-secondary-100'
-                    }`}
-                >
-                  <Icon name={item.icon} size={18} />
-                  <span>{item.label}</span>
-                </Link>
-              )
-            ))}
+          {/* Desktop Navigation + Contact Us */}
+          <nav className="hidden md:flex items-center flex-1 justify-end gap-6">
+            <div className="flex items-center space-x-6">
+              {navigationItems.map((item) => (
+                shouldShowNavItem(item.roles) && (
+                  <Link
+                    key={item.path}
+                    to={item.path}
+                    className={`flex items-center space-x-2 px-3 py-2 rounded-md text-sm font-medium 
+                             transition-all duration-200 ease-out micro-interaction
+                             ${isActiveRoute(item.path)
+                        ? 'bg-primary-100 text-primary border border-primary-500' : 'text-text-secondary hover:text-text-primary hover:bg-secondary-100'
+                      }`}
+                  >
+                    <Icon name={item.icon} size={18} />
+                    <span>{item.label}</span>
+                  </Link>
+                )
+              ))}
+            </div>
+
+            <div className="flex items-center gap-3">
+              <Link
+                to="/#contact"
+                className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-700 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200 ease-out border border-primary hover:border-primary-700"
+              >
+                <Icon name="MessageCircle" size={18} />
+                <span>Contact Us</span>
+              </Link>
+            </div>
           </nav>
 
           {/* Mobile menu button (hamburger) */}
@@ -139,6 +151,24 @@ const Header = () => {
                 </Link>
               )
             ))}
+            <div className="pt-3 mt-3 border-t border-border space-y-2">
+              <Link
+                to="/#contact"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 w-full py-3 rounded-lg text-base font-semibold text-white bg-primary hover:bg-primary-700 shadow-elevation-1 active:scale-[0.98] transition-all duration-200"
+              >
+                <Icon name="MessageCircle" size={20} />
+                <span>Contact Us</span>
+              </Link>
+              <a
+                href="tel:+919873040405"
+                onClick={() => setIsMobileMenuOpen(false)}
+                className="flex items-center justify-center gap-2 w-full py-2.5 text-sm font-medium text-primary hover:text-primary-700"
+              >
+                <Icon name="Phone" size={18} />
+                <span>+91 98730 40405</span>
+              </a>
+            </div>
           </div>
         </div>
       )}

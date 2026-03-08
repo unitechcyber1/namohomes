@@ -44,6 +44,46 @@ export const formatIndianNumber = (num) => {
   return num?.toLocaleString('en-IN');
 };
 
+/**
+ * Parse price to number (handles string like "20400000", "85 Lac", "1.5 Cr")
+ */
+const parsePriceToNumber = (value) => {
+  if (value == null || value === '') return null;
+  const num = Number(value);
+  if (!Number.isNaN(num)) return num;
+  const s = String(value).trim().replace(/,/g, '');
+  const n = parseFloat(s);
+  if (Number.isNaN(n)) return null;
+  if (/cr|crore/i.test(s)) return n * 10000000;
+  if (/l|lac|lakh/i.test(s)) return n * 100000;
+  if (/k/i.test(s)) return n * 1000;
+  return n;
+};
+
+/**
+ * Format starting_price for display: Lac/Cr or "On Request" when 0
+ * e.g. 20400000 → "₹2.04 Cr", 8500000 → "₹85.00 Lac", 0 → "On Request"
+ */
+export const formatPriceForDisplay = (price) => {
+  const num = typeof price === 'number' ? price : parsePriceToNumber(price);
+  if (num == null || num === 0) return 'On Request';
+  const absAmount = Math.abs(num);
+  const sign = num < 0 ? '-' : '';
+  if (absAmount >= 10000000) {
+    const crores = (absAmount / 10000000).toFixed(2);
+    return `${sign}₹${crores} Cr`;
+  }
+  if (absAmount >= 100000) {
+    const lakhs = (absAmount / 100000).toFixed(2);
+    return `${sign}₹${lakhs} Lac`;
+  }
+  if (absAmount >= 1000) {
+    const thousands = (absAmount / 1000).toFixed(2);
+    return `${sign}₹${thousands} K`;
+  }
+  return `${sign}₹${absAmount.toLocaleString('en-IN')}`;
+};
+
 // Property type mappings for Indian market
 export const INDIAN_PROPERTY_TYPES = [
   { value: '', label: 'All Property Types' },
