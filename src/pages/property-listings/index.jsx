@@ -8,8 +8,9 @@ import SortDropdown from "./components/SortDropdown";
 import { getProjects } from "../../service/projectService";
 import PropertyCard from "../../components/cards/PropertyCard";
 
-const PropertyListings = () => {
+const PropertyListings = ({ projectStatus }) => {
   const [searchParams, setSearchParams] = useSearchParams();
+  const isNewLaunchPage = projectStatus === "New Launch";
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(true);
@@ -36,6 +37,7 @@ const PropertyListings = () => {
       };
       if (query?.trim()) params.name = query.trim();
       if (locationParam?.trim()) params.city = locationParam.trim();
+      if (projectStatus) params.project_status = projectStatus;
 
       const data = await getProjects(params);
 
@@ -63,7 +65,7 @@ const PropertyListings = () => {
   // Load projects when page mounts or search params (from "View all results") change
   useEffect(() => {
     loadProjects(1);
-  }, [searchParams?.get("query") ?? "", searchParams?.get("location") ?? ""]);
+  }, [searchParams?.get("query") ?? "", searchParams?.get("location") ?? "", projectStatus]);
 
   // Apply client-side filters (propertyType, minPrice, etc.) when properties or searchParams change
   useEffect(() => {
@@ -232,7 +234,10 @@ const PropertyListings = () => {
   const getBreadcrumbs = () => {
     const breadcrumbs = [
       { label: "Home", path: "/" },
-      { label: "Properties", path: "/property-listings" },
+      {
+        label: isNewLaunchPage ? "New Launch Projects" : "Properties",
+        path: isNewLaunchPage ? "/new-launch-projects" : "/property-listings",
+      },
     ];
 
     const location = searchParams?.get("location");
@@ -293,7 +298,7 @@ const PropertyListings = () => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold text-text-primary">
-                  Properties for Sale
+                  {isNewLaunchPage ? "New Launch Projects" : "Properties for Sale"}
                 </h1>
                 <p className="text-text-secondary mt-1">
                   {loading

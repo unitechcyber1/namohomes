@@ -3,6 +3,7 @@ import React, { useState, useRef } from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
+import { formatPriceForDisplay } from '../../../utils/indianFormatters';
 
 const SimilarProperties = ({ properties = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -30,15 +31,6 @@ const SimilarProperties = ({ properties = [] }) => {
       ...property,
       images: hasOutdatedImages ? updatedImages : (property?.images || updatedImages)
     };
-  };
-
-  const formatPrice = (price) => {
-    return new Intl.NumberFormat('en-IN', {
-      style: 'currency',
-      currency: 'INR',
-      minimumFractionDigits: 0,
-      maximumFractionDigits: 0,
-    }).format(price);
   };
 
   const formatNumber = (num) => {
@@ -163,7 +155,7 @@ const SimilarProperties = ({ properties = [] }) => {
                         {property?.title}
                       </h3>
                       <p className="text-xl font-bold text-primary">
-                        {formatPrice(property?.price)}
+                        {formatPriceForDisplay(property?.price ?? property?.starting_price)}
                       </p>
                     </div>
                     

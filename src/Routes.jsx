@@ -8,6 +8,7 @@ import Test from "./pages/test";
 // Page imports
 import Homepage from "./pages/homepage";
 import PropertyListings from "./pages/property-listings";
+import NewLaunchProjects from "./pages/new-launch-projects";
 import PropertyDetails from "./pages/property-details";
 import AuthPage from "./pages/login";
 // import AgentDashboard from "pages/agent-dashboard";
@@ -23,6 +24,7 @@ const Routes = () => {
       <RouterRoutes>
         <Route path="/" element={<Homepage />} />
         <Route path="/property-listings" element={<PropertyListings />} />
+        <Route path="/new-launch-projects" element={<NewLaunchProjects />} />
         <Route path="/property-details" element={<PropertyDetails />} />
         <Route path="/login" element={<AuthPage />} />
         <Route path="/listings/:category" element={<Listingcategory />} />
