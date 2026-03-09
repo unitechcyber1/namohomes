@@ -11,6 +11,12 @@ import { mapProjectToPropertyDetails } from '../../utils/mapProjectToPropertyDet
 import ImageGallery from './components/ImageGallery';
 import PropertyOverview from './components/PropertyOverview';
 import PropertyTabs from './components/PropertyTabs';
+import PriceTable from './components/PriceTable';
+import FloorPlan from './components/FloorPlan';
+import MasterPlan from './components/MasterPlan';
+import LocationMap from './components/LocationMap';
+import ProjectHighlights from './components/ProjectHighlights';
+import LocationAdvantages from './components/LocationAdvantages';
 import MortgageCalculator from './components/MortgageCalculator';
 import ContactForm from './components/ContactForm';
 import SimilarProperties from './components/SimilarProperties';
@@ -213,6 +219,38 @@ const PropertyDetails = () => {
                 property={property}
                 activeTab={activeTab}
                 onTabChange={setActiveTab}
+              />
+
+              <PriceTable
+                plans={property?.plans}
+                contactPhone={property?.contact_details?.[0]?.phone}
+              />
+
+              <FloorPlan
+                plans={property?.plans}
+                name={property?.title ?? property?.name}
+                contactPhone={property?.contact_details?.[0]?.phone}
+              />
+
+              <MasterPlan
+                name={property?.title ?? property?.name}
+                masterPlan={property?.master_plan}
+              />
+
+              <LocationMap
+                name={property?.title ?? property?.name}
+                locationMap={property?.location_map}
+              />
+
+              <ProjectHighlights
+                name={property?.title ?? property?.name}
+                highlights={property?.highlights}
+              />
+
+              <LocationAdvantages
+                name={property?.title ?? property?.name}
+                advantages={property?.location_advantages}
+                brochure={property?.brochure?.s3_link ?? property?.brochure?.name ?? property?.brochure}
               />
             </div>
 

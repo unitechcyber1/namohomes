@@ -85,7 +85,7 @@ const PropertyOverview = ({
       </div>
 
       {/* Property Features Grid */}
-      <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
+      {/* <div className="grid grid-cols-2 md:grid-cols-4 lg:grid-cols-6 gap-4 mb-6">
         <div className="text-center p-3 bg-background rounded-md">
           <Icon name="Bed" size={24} className="text-primary mx-auto mb-2" />
           <p className="text-lg font-semibold text-text-primary">{property?.bedrooms}</p>
@@ -125,7 +125,7 @@ const PropertyOverview = ({
           <p className="text-lg font-semibold text-text-primary">{property?.daysOnMarket}</p>
           <p className="text-sm text-text-secondary">Days on Market</p>
         </div>
-      </div>
+      </div> */}
 
       {/* Property Type & Quick Info */}
       <div className="flex flex-wrap items-center gap-4 text-sm">

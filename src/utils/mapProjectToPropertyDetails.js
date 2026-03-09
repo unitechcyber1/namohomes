@@ -153,6 +153,12 @@ export function mapProjectToPropertyDetails(project) {
     for_rent: project.for_rent,
     for_sale: project.for_sale,
     highlights: project.highlights,
+    location_advantages:
+      project.location_advantages ??
+      project.location_advantage ??
+      project.locationAdvantages ??
+      project.advantages ??
+      null,
     brochure: project.brochure,
     master_plan: project.master_plan,
     location_map: project.location_map,
