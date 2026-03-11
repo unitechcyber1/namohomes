@@ -1,11 +1,11 @@
 import React, { useState } from 'react';
-// import { base44 } from '@/api/base44Client';
 import { motion } from 'framer-motion';
-import { MessageCircle, Phone, Send, CheckCircle, ArrowRight } from 'lucide-react';
+import { MessageCircle, Phone, Send, CheckCircle } from 'lucide-react';
 import Button from '../../../components/ui/Button';
 import Input from '../../../components/ui/Input';
 import Textarea from '../../../components/ui/Textarea';
 import { toast } from 'sonner';
+import { sendContactLead } from '../../../service/contactService';
 
 export default function LeadCapture() {
   const [formData, setFormData] = useState({
@@ -20,21 +20,21 @@ export default function LeadCapture() {
   const handleSubmit = async (e) => {
     e.preventDefault();
     setLoading(true);
-    
-    const urlParams = new URLSearchParams(window.location.search);
-    
-    // await base44.entities.Lead.create({
-    //   ...formData,
-    //   source: 'website',
-    //   utm_source: urlParams.get('utm_source') || '',
-    //   utm_medium: urlParams.get('utm_medium') || '',
-    //   utm_campaign: urlParams.get('utm_campaign') || '',
-    //   page_url: window.location.href
-    // });
-    
-    setLoading(false);
-    setSubmitted(true);
-    toast.success('Thank you! We will contact you soon.');
+    try {
+      await sendContactLead({
+        source: 'homepage',
+        name: formData.name.trim(),
+        email: formData.email?.trim() || '',
+        phone: formData.phone.trim(),
+        message: formData.message?.trim() || '',
+      });
+      setSubmitted(true);
+      toast.success('Thank you! We will contact you soon.');
+    } catch (err) {
+      toast.error(err?.response?.data?.message || 'Something went wrong. Please try again.');
+    } finally {
+      setLoading(false);
+    }
   };
 
   return (

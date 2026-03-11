@@ -7,11 +7,11 @@
 
     const sortOptions = [
       { value: 'relevance', label: 'Best Match', icon: 'Star' },
-      { value: 'price-low', label: 'Price: Low to High', icon: 'TrendingUp' },
-      { value: 'price-high', label: 'Price: High to Low', icon: 'TrendingDown' },
-      { value: 'newest', label: 'Newest First', icon: 'Clock' },
-      { value: 'oldest', label: 'Oldest First', icon: 'History' },
-      { value: 'size', label: 'Largest First', icon: 'Maximize' }
+      { value: 'low_to_high', label: 'Price: Low to High', icon: 'TrendingUp' },
+      { value: 'high_to_low', label: 'Price: High to Low', icon: 'TrendingDown' },
+      // { value: 'newest', label: 'Newest First', icon: 'Clock' },
+      // { value: 'oldest', label: 'Oldest First', icon: 'History' },
+      // { value: 'size', label: 'Largest First', icon: 'Maximize' }
     ];
 
     useEffect(() => {

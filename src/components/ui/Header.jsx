@@ -102,7 +102,7 @@ const Header = () => {
 
             <div className="flex items-center gap-3">
               <Link
-                to="/#contact"
+                to="/contact-us"
                 className="flex items-center gap-2 px-5 py-2.5 rounded-lg text-sm font-semibold text-white bg-primary hover:bg-primary-700 shadow-elevation-1 hover:shadow-elevation-2 transition-all duration-200 ease-out border border-primary hover:border-primary-700"
               >
                 <Icon name="MessageCircle" size={18} />
@@ -153,7 +153,7 @@ const Header = () => {
             ))}
             <div className="pt-3 mt-3 border-t border-border space-y-2">
               <Link
-                to="/#contact"
+                to="/contact-us"
                 onClick={() => setIsMobileMenuOpen(false)}
                 className="flex items-center justify-center gap-2 w-full py-3 rounded-lg text-base font-semibold text-white bg-primary hover:bg-primary-700 shadow-elevation-1 active:scale-[0.98] transition-all duration-200"
               >
