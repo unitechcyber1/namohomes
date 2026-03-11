@@ -129,6 +129,11 @@ const PropertyDetails = () => {
     );
   }
 
+  const primaryPhone = property?.contact_details?.[0]?.phone;
+  const phoneHref = primaryPhone
+    ? `tel:${String(primaryPhone).replace(/[\s-]/g, "")}`
+    : null;
+
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -179,13 +184,25 @@ const PropertyDetails = () => {
               </button>
             </div>
             <div className="flex items-center space-x-2">
+              {phoneHref ? (
+                <a
+                  href={phoneHref}
+                  className="px-4 py-2 bg-accent text-white rounded-md text-sm font-medium hover:bg-accent-600 transition-all duration-200"
+                >
+                  Contact Agent
+                </a>
+              ) : (
+                <button
+                  onClick={() => setShowContactForm(true)}
+                  className="px-4 py-2 bg-accent text-white rounded-md text-sm font-medium hover:bg-accent-600 transition-all duration-200"
+                >
+                  Contact Agent
+                </button>
+              )}
               <button
                 onClick={() => setShowContactForm(true)}
-                className="px-4 py-2 bg-accent text-white rounded-md text-sm font-medium hover:bg-accent-600 transition-all duration-200"
+                className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary-700 transition-all duration-200"
               >
-                Contact Agent
-              </button>
-              <button className="px-4 py-2 bg-primary text-white rounded-md text-sm font-medium hover:bg-primary-700 transition-all duration-200">
                 Schedule Tour
               </button>
             </div>

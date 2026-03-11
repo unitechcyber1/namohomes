@@ -10,12 +10,12 @@ const HeroSection = ({ onSearch }) => {
   const [currentSlide, setCurrentSlide] = useState(0);
 
   const heroImages = [
-    { url: commercialImg, alt: "Modern luxury home exterior" },
-    { url: residentialImg, alt: "Beautiful residential neighborhood" },
     {
-      url: "https://images.pexels.com/photos/106399/pexels-photo-106399.jpeg?auto=compress&cs=tinysrgb&w=2070&q=80",
-      alt: "Contemporary home with garden"
-    }
+      url: "https://namohome-bucket.s3.ap-south-1.amazonaws.com/images/sooraj-dev-SCnQIUbtFIk-unsplash.jpg",
+      alt: "sun rising in the morning"
+    },
+    { url: "https://namohome-bucket.s3.ap-south-1.amazonaws.com/images/1615993ca9fe975bbd9a6b4e66ec44.webp", alt: "Modern luxury home exterior" },
+    { url: "https://namohome-bucket.s3.ap-south-1.amazonaws.com/images/a152fb0ba819171015ed67b3a53b81.webp", alt: "Beautiful residential neighborhood" },
   ];
 
   useEffect(() => {

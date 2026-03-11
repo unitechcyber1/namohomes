@@ -1,6 +1,7 @@
 // src/pages/property-details/components/ContactForm.jsx
 import React, { useState } from "react";
 import Icon from "../../../components/AppIcon";
+import { sendContactLead } from "../../../service/contactService";
 
 const ContactForm = ({ property, agent, variant = "modal", onClose }) => {
   const isModal = variant === "modal";
@@ -65,8 +66,14 @@ const ContactForm = ({ property, agent, variant = "modal", onClose }) => {
     setIsSubmitting(true);
 
     try {
-      // Simulate API call
-      await new Promise((resolve) => setTimeout(resolve, 2000));
+      await sendContactLead({
+        source: "property-details",
+        propertyId: property?._id,
+        propertyTitle: property?.title,
+        propertyAddress: property?.address,
+        agentName: agent?.name,
+        ...formData,
+      });
 
       setIsSubmitted(true);
 
@@ -75,6 +82,10 @@ const ContactForm = ({ property, agent, variant = "modal", onClose }) => {
       }
     } catch (error) {
       console.error("Error submitting form:", error);
+      setErrors((prev) => ({
+        ...prev,
+        submit: "Something went wrong. Please try again.",
+      }));
     } finally {
       setIsSubmitting(false);
     }
@@ -218,22 +229,35 @@ const ContactForm = ({ property, agent, variant = "modal", onClose }) => {
     </>
   );
 
+  const loadingOverlay = isSubmitting && (
+    <div
+      className="absolute inset-0 z-10 flex flex-col items-center justify-center gap-3 rounded-lg bg-surface/80 backdrop-blur-sm"
+      aria-live="polite"
+      aria-busy="true"
+    >
+      <Icon name="Loader2" size={40} className="animate-spin text-primary" />
+      <span className="text-sm font-medium text-text-primary">Sending your message...</span>
+    </div>
+  );
+
   if (isModal) {
     return (
       <div
         className="fixed inset-0 bg-black/50 z-modal flex items-center justify-center p-4"
         onClick={handleOverlayClick}
       >
-        <div className="bg-surface rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
+        <div className="relative bg-surface rounded-lg max-w-2xl w-full max-h-[90vh] overflow-y-auto">
           {formContent}
+          {loadingOverlay}
         </div>
       </div>
     );
   }
 
   return (
-    <div className="card overflow-hidden bg-surface">
+    <div className="card overflow-hidden bg-surface relative">
       {formContent}
+      {loadingOverlay}
     </div>
   );
 };

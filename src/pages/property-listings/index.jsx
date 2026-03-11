@@ -38,6 +38,9 @@ const PropertyListings = ({ projectStatus }) => {
       if (query?.trim()) params.name = query.trim();
       if (locationParam?.trim()) params.city = locationParam.trim();
       if (projectStatus) params.project_status = projectStatus;
+      if (sortBy === "low_to_high" || sortBy === "high_to_low") {
+        params.price_sort = sortBy;
+      }
 
       const data = await getProjects(params);
 
@@ -65,7 +68,12 @@ const PropertyListings = ({ projectStatus }) => {
   // Load projects when page mounts or search params (from "View all results") change
   useEffect(() => {
     loadProjects(1);
-  }, [searchParams?.get("query") ?? "", searchParams?.get("location") ?? "", projectStatus]);
+  }, [
+    searchParams?.get("query") ?? "",
+    searchParams?.get("location") ?? "",
+    projectStatus,
+    sortBy,
+  ]);
 
   // Apply client-side filters (propertyType, minPrice, etc.) when properties or searchParams change
   useEffect(() => {
@@ -142,12 +150,14 @@ const PropertyListings = ({ projectStatus }) => {
   // Sort properties
   const sortProperties = (propertiesToSort, sortOption) => {
     const sorted = [...propertiesToSort];
+    const getPrice = (p) =>
+      Number(p?.starting_price ?? 0) || 0;
 
     switch (sortOption) {
-      case "price-low":
-        return sorted?.sort((a, b) => a?.price - b?.price);
-      case "price-high":
-        return sorted?.sort((a, b) => b?.price - a?.price);
+      case "low_to_high":
+        return sorted?.sort((a, b) => getPrice(a) - getPrice(b));
+      case "high_to_low":
+        return sorted?.sort((a, b) => getPrice(b) - getPrice(a));
       case "newest":
         return sorted?.sort((a, b) => a?.daysOnMarket - b?.daysOnMarket);
       case "oldest":
