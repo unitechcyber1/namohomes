@@ -8,6 +8,7 @@ import Test from "./pages/test";
 // Page imports
 import Homepage from "./pages/homepage";
 import PropertyListings from "./pages/property-listings";
+import { PropertyListingsByMicrolocationRoute } from "./pages/property-listings";
 import NewLaunchProjects from "./pages/new-launch-projects";
 import PropertyDetails from "./pages/property-details";
 import AuthPage from "./pages/login";
@@ -25,6 +26,9 @@ const Routes = () => {
       <RouterRoutes>
         <Route path="/" element={<Homepage />} />
         <Route path="/property-listings" element={<PropertyListings />} />
+        <Route path="/residential-properties-in-gurgaon" element={<PropertyListings projectType="residential" />} />
+        <Route path="/commercial-properties-in-gurgaon" element={<PropertyListings projectType="commercial" />} />
+        <Route path="/sco-plots-in-gurgaon" element={<PropertyListings plansType="sco" />} />
         <Route path="/new-launch-projects" element={<NewLaunchProjects />} />
         <Route path="/property-details" element={<PropertyDetails />} />
         <Route path="/contact-us" element={<ContactUsPage />} />
@@ -32,8 +36,9 @@ const Routes = () => {
         <Route path="/listings/:category" element={<Listingcategory />} />
         <Route path="/test" element={<Test />} />
 
-        {/*  <Route path="/agent-dashboard" element={<AgentDashboard />} />
-          <Route path="/user-profile-settings" element={<UserProfileSettings />} />*/}
+        {/* Dynamic microlocation pages: /golf-course-road, /sohna-road, etc. */}
+        <Route path="/:microlocationSlug" element={<PropertyListingsByMicrolocationRoute />} />
+
         <Route path="*" element={<NotFound />} />
       </RouterRoutes>
       {/* </ErrorBoundary> */}
