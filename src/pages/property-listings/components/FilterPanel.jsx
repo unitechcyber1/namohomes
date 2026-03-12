@@ -1,6 +1,10 @@
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef, useMemo } from 'react';
 import Icon from '../../../components/AppIcon';
 import { INDIAN_PROPERTY_TYPES, INDIAN_PRICE_RANGES, INDIAN_AMENITIES } from '../../../utils/indianFormatters';
+import { debounce } from '../../../utils/debounce';
+
+const DEBOUNCE_MS = 400;
+const SEARCH_LIKE_KEYS = ['query', 'location', 'microlocation'];
 
 const FilterPanel = ({ 
   isOpen, 
@@ -11,6 +15,7 @@ const FilterPanel = ({
   const [filters, setFilters] = useState({
     query: '',
     location: '',
+    microlocation: '',
     propertyType: '',
     minPrice: '',
     maxPrice: '',
@@ -34,6 +39,21 @@ const FilterPanel = ({
   const priceRanges = INDIAN_PRICE_RANGES;
   const amenitiesList = INDIAN_AMENITIES;
 
+  const onFilterChangeRef = useRef(onFilterChange);
+  onFilterChangeRef.current = onFilterChange;
+
+  const debouncedApply = useMemo(
+    () =>
+      debounce((newFilters) => {
+        onFilterChangeRef.current(newFilters);
+      }, DEBOUNCE_MS),
+    []
+  );
+
+  useEffect(() => {
+    return () => debouncedApply.cancel();
+  }, [debouncedApply]);
+
   useEffect(() => {
     setFilters(prev => ({ ...prev, ...initialFilters }));
   }, [initialFilters]);
@@ -41,7 +61,11 @@ const FilterPanel = ({
   const handleFilterChange = (key, value) => {
     const newFilters = { ...filters, [key]: value };
     setFilters(newFilters);
-    onFilterChange(newFilters);
+    if (SEARCH_LIKE_KEYS.includes(key)) {
+      debouncedApply(newFilters);
+    } else {
+      onFilterChange(newFilters);
+    }
   };
 
   const handlePriceRangeSelect = (range) => {
@@ -65,9 +89,11 @@ const FilterPanel = ({
   };
 
   const clearAllFilters = () => {
+    debouncedApply.cancel();
     const clearedFilters = {
       query: '',
       location: '',
+      microlocation: '',
       propertyType: '',
       minPrice: '',
       maxPrice: '',
@@ -155,7 +181,7 @@ const FilterPanel = ({
               </div>
 
               {/* Location */}
-              <div>
+              {/* <div>
                 <label className="block text-sm font-medium text-text-primary mb-2">
                   Location
                 </label>
@@ -168,6 +194,27 @@ const FilterPanel = ({
                     value={filters?.location}
                     onChange={(e) => handleFilterChange('location', e?.target?.value)}
                     placeholder="City, locality, or project"
+                    className="block w-full pl-10 pr-3 py-2 border border-border rounded-md
+                             focus:border-border-focus focus:ring-1 focus:ring-primary-500
+                             transition-all duration-200 ease-out text-sm"
+                  />
+                </div>
+              </div> */}
+
+              {/* Microlocation */}
+              <div>
+                <label className="block text-sm font-medium text-text-primary mb-2">
+                  Microlocation
+                </label>
+                <div className="relative">
+                  <div className="absolute inset-y-0 left-0 pl-3 flex items-center pointer-events-none">
+                    <Icon name="MapPin" size={16} className="text-text-secondary" />
+                  </div>
+                  <input
+                    type="text"
+                    value={filters?.microlocation ?? ''}
+                    onChange={(e) => handleFilterChange('microlocation', e?.target?.value)}
+                    placeholder="e.g. Sector 54, DLF Phase 1"
                     className="block w-full pl-10 pr-3 py-2 border border-border rounded-md
                              focus:border-border-focus focus:ring-1 focus:ring-primary-500
                              transition-all duration-200 ease-out text-sm"
@@ -246,7 +293,7 @@ const FilterPanel = ({
               </div>
 
               {/* Bedrooms & Bathrooms */}
-              <div>
+              {/* <div>
                 <button
                   onClick={() => toggleSection('bedsBaths')}
                   className="flex items-center justify-between w-full mb-3"
@@ -298,10 +345,10 @@ const FilterPanel = ({
                     </div>
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {/* Area/Size */}
-              <div>
+              {/* <div>
                 <button
                   onClick={() => toggleSection('size')}
                   className="flex items-center justify-between w-full mb-3"
@@ -341,10 +388,10 @@ const FilterPanel = ({
                     </div>
                   </div>
                 )}
-              </div>
+              </div> */}
 
               {/* Amenities */}
-              <div>
+              {/* <div>
                 <button
                   onClick={() => toggleSection('amenities')}
                   className="flex items-center justify-between w-full mb-3"
@@ -376,7 +423,7 @@ const FilterPanel = ({
                     ))}
                   </div>
                 )}
-              </div>
+              </div> */}
             </div>
           </div>
 

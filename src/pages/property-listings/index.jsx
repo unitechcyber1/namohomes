@@ -1,14 +1,22 @@
 import React, { useState, useEffect, useRef } from "react";
-import { useSearchParams, Link } from "react-router-dom";
+import { useSearchParams, Link, useParams } from "react-router-dom";
 import Header from "../../components/ui/Header";
 import Icon from "../../components/AppIcon";
 import FilterPanel from "./components/FilterPanel";
 import MapView from "./components/MapView";
 import SortDropdown from "./components/SortDropdown";
-import { getProjects } from "../../service/projectService";
+import { getProjects, getMicroLocations } from "../../service/projectService";
 import PropertyCard from "../../components/cards/PropertyCard";
+import { slugToName, nameToSlug } from "../../utils/slug";
 
-const PropertyListings = ({ projectStatus }) => {
+const MICROLOCATION_CITY = "gurugram";
+
+const PropertyListings = ({
+  projectStatus,
+  projectType,
+  plansType,
+  microlocationSlug: microlocationSlugProp,
+}) => {
   const [searchParams, setSearchParams] = useSearchParams();
   const isNewLaunchPage = projectStatus === "New Launch";
   const [properties, setProperties] = useState([]);
@@ -24,7 +32,13 @@ const PropertyListings = ({ projectStatus }) => {
   const [currentPage, setCurrentPage] = useState(1);
   const [totalPages, setTotalPages] = useState(1);
   const [totalCount, setTotalCount] = useState(0);
+  const [microlocations, setMicrolocations] = useState([]);
   const limit = 21;
+
+  const effectiveMicrolocation =
+    microlocationSlugProp?.trim()
+      ? slugToName(microlocationSlugProp)
+      : searchParams?.get("microlocation") ?? "";
 
   const loadProjects = async (pageNumber = 1) => {
     try {
@@ -37,7 +51,10 @@ const PropertyListings = ({ projectStatus }) => {
       };
       if (query?.trim()) params.name = query.trim();
       if (locationParam?.trim()) params.city = locationParam.trim();
+      if (effectiveMicrolocation?.trim()) params.microlocation = effectiveMicrolocation.trim();
       if (projectStatus) params.project_status = projectStatus;
+      if (projectType) params.project_type = projectType;
+      if (plansType) params.plans_type = plansType;
       if (sortBy === "low_to_high" || sortBy === "high_to_low") {
         params.price_sort = sortBy;
       }
@@ -71,15 +88,37 @@ const PropertyListings = ({ projectStatus }) => {
   }, [
     searchParams?.get("query") ?? "",
     searchParams?.get("location") ?? "",
+    effectiveMicrolocation,
     projectStatus,
+    projectType,
+    plansType,
     sortBy,
   ]);
+
+  // Fetch microlocations for gurugram (shown at top of listing)
+  useEffect(() => {
+    let cancelled = false;
+    getMicroLocations(MICROLOCATION_CITY)
+      .then((res) => {
+        if (cancelled) return;
+        const list = Array.isArray(res) ? res : res?.data ?? res?.microLocations ?? res?.microlocations ?? [];
+        const active = list.filter((m) => m?.active !== false);
+        const sorted = [...active].sort(
+          (a, b) => (a?.priority?.order ?? 1000) - (b?.priority?.order ?? 1000)
+        );
+        setMicrolocations(sorted);
+      })
+      .catch(() => {
+        if (!cancelled) setMicrolocations([]);
+      });
+    return () => { cancelled = true; };
+  }, []);
 
   // Apply client-side filters (propertyType, minPrice, etc.) when properties or searchParams change
   useEffect(() => {
     if (properties?.length === 0 && !loading) return;
     applyFilters(properties);
-  }, [properties, searchParams?.toString(), sortBy]);
+  }, [properties, searchParams?.toString(), sortBy, projectType, plansType, effectiveMicrolocation]);
 
   // Apply filters based on search params
   const applyFilters = (propertiesToFilter = properties) => {
@@ -87,6 +126,7 @@ const PropertyListings = ({ projectStatus }) => {
     console.log(filtered);
     const query = searchParams?.get("query");
     const location = searchParams?.get("location");
+    const microlocation = effectiveMicrolocation?.trim() || searchParams?.get("microlocation");
     const propertyType = searchParams?.get("propertyType");
     const minPrice = searchParams?.get("minPrice");
     const maxPrice = searchParams?.get("maxPrice");
@@ -111,9 +151,41 @@ const PropertyListings = ({ projectStatus }) => {
       );
     }
 
+    // microlocation: backend uses location.micro_location (array of ObjectIds refs to MicroLocation).
+    // Query param can be MicroLocation ObjectId or name (when backend returns populated refs).
+    if (microlocation?.trim()) {
+      const mlParam = microlocation.trim();
+      const mlLower = mlParam.toLowerCase();
+      const isMongoId = /^[a-fA-F0-9]{24}$/.test(mlParam);
+      filtered = filtered?.filter((property) => {
+        const arr = property?.location?.micro_location;
+        if (!Array.isArray(arr) || arr.length === 0) return false;
+        return arr.some((item) => {
+          if (item == null) return false;
+          const id = typeof item === "object" && item !== null ? item._id ?? item.id : item;
+          const name = typeof item === "object" && item !== null ? (item.name ?? item?.name) : null;
+          if (isMongoId) return String(id).toLowerCase() === mlLower;
+          if (name) return String(name).toLowerCase().includes(mlLower) || mlLower.includes(String(name).toLowerCase());
+          return false;
+        });
+      });
+    }
+
     if (propertyType && propertyType !== "all") {
       filtered = filtered?.filter(
         (property) => property?.propertyType === propertyType,
+      );
+    }
+    if (projectType) {
+      filtered = filtered?.filter(
+        (property) =>
+          (property?.propertyType ?? property?.project_type) === projectType,
+      );
+    }
+    if (plansType) {
+      filtered = filtered?.filter(
+        (property) =>
+          (property?.plans_type ?? property?.project_type) === plansType,
       );
     }
 
@@ -240,33 +312,59 @@ const PropertyListings = ({ projectStatus }) => {
     return pages;
   };
 
+  // Listing path and title for type-specific pages (residential, commercial, SCO)
+  const getListingPath = () => {
+    if (projectType === "residential") return "/residential-in-gurgaon";
+    if (projectType === "commercial") return "/commercial-in-gurgaon";
+    if (plansType === "sco") return "/sco-plots-in-gurgaon";
+    return "/property-listings";
+  };
+  const getListingTitle = () => {
+    if (projectType === "residential") return "Residential Properties in Gurgaon";
+    if (projectType === "commercial") return "Commercial Properties in Gurgaon";
+    if (plansType === "sco") return "SCO Plots in Gurgaon";
+    if (effectiveMicrolocation?.trim()) return `Properties in ${effectiveMicrolocation.trim()}`;
+    return null;
+  };
+
   // Get breadcrumb items
   const getBreadcrumbs = () => {
+    const listingTitle = getListingTitle();
     const breadcrumbs = [
       { label: "Home", path: "/" },
       {
-        label: isNewLaunchPage ? "New Launch Projects" : "Properties",
-        path: isNewLaunchPage ? "/new-launch-projects" : "/property-listings",
+        label: isNewLaunchPage
+          ? "New Launch Projects"
+          : listingTitle ?? "Properties",
+        path: isNewLaunchPage ? "/new-launch-projects" : getListingPath(),
       },
     ];
 
     const location = searchParams?.get("location");
-    const propertyType = searchParams?.get("propertyType");
+    const microlocationParam = searchParams?.get("microlocation");
+    const propertyTypeParam = searchParams?.get("propertyType");
 
     if (location) {
       breadcrumbs?.push({ label: location, path: null });
     }
 
-    if (propertyType && propertyType !== "all") {
+    if (effectiveMicrolocation?.trim() || microlocationParam?.trim()) {
       breadcrumbs?.push({
-        label: propertyType?.charAt(0)?.toUpperCase() + propertyType?.slice(1),
+        label: effectiveMicrolocation?.trim() || microlocationParam?.trim(),
+        path: null,
+      });
+    }
+
+    if (propertyTypeParam && propertyTypeParam !== "all") {
+      breadcrumbs?.push({
+        label: propertyTypeParam?.charAt(0)?.toUpperCase() + propertyTypeParam?.slice(1),
         path: null,
       });
     }
 
     return breadcrumbs;
   };
-
+  console.log(microlocations);
   return (
     <div className="min-h-screen bg-background">
       <Header />
@@ -308,7 +406,9 @@ const PropertyListings = ({ projectStatus }) => {
             <div className="flex flex-col sm:flex-row sm:items-center sm:justify-between gap-4">
               <div>
                 <h1 className="text-2xl font-bold text-text-primary">
-                  {isNewLaunchPage ? "New Launch Projects" : "Properties for Sale"}
+                  {isNewLaunchPage
+                    ? "New Launch Projects"
+                    : getListingTitle() ?? "Properties for Sale"}
                 </h1>
                 <p className="text-text-secondary mt-1">
                   {loading
@@ -322,22 +422,20 @@ const PropertyListings = ({ projectStatus }) => {
                 <div className="flex lg:hidden bg-secondary-100 rounded-md p-1">
                   <button
                     onClick={() => setViewMode("list")}
-                    className={`px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${
-                      viewMode === "list"
-                        ? "bg-surface text-text-primary shadow-sm"
-                        : "text-text-secondary hover:text-text-primary"
-                    }`}
+                    className={`px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${viewMode === "list"
+                      ? "bg-surface text-text-primary shadow-sm"
+                      : "text-text-secondary hover:text-text-primary"
+                      }`}
                   >
                     <Icon name="List" size={16} className="inline mr-1" />
                     List
                   </button>
                   <button
                     onClick={() => setViewMode("map")}
-                    className={`px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${
-                      viewMode === "map"
-                        ? "bg-surface text-text-primary shadow-sm"
-                        : "text-text-secondary hover:text-text-primary"
-                    }`}
+                    className={`px-3 py-1.5 rounded text-sm font-medium transition-all duration-200 ${viewMode === "map"
+                      ? "bg-surface text-text-primary shadow-sm"
+                      : "text-text-secondary hover:text-text-primary"
+                      }`}
                   >
                     <Icon name="Map" size={16} className="inline mr-1" />
                     Map
@@ -371,6 +469,7 @@ const PropertyListings = ({ projectStatus }) => {
               initialFilters={{
                 query: searchParams?.get("query") || "",
                 location: searchParams?.get("location") || "",
+                microlocation: effectiveMicrolocation?.trim() || searchParams?.get("microlocation") || "",
                 propertyType: searchParams?.get("propertyType") || "",
                 minPrice: searchParams?.get("minPrice") || "",
                 maxPrice: searchParams?.get("maxPrice") || "",
@@ -385,7 +484,57 @@ const PropertyListings = ({ projectStatus }) => {
               <div className="hidden lg:flex h-[calc(100vh-200px)]">
                 {/* Property List */}
                 <div className="w-full overflow-y-auto">
+                  {/* Microlocations strip - clickable cards linking to /slug */}
+                  {microlocations?.length > 0 && (
+                    <div className="bg-surface border-b border-border">
+                      <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-4">
+                        <h2 className="text-sm font-semibold text-text-secondary uppercase tracking-wide mb-3">
+                          Explore by Microlocation
+                        </h2>
+                        <div className="flex gap-3 overflow-x-auto pb-2 no-scrollbar">
+                          {microlocations.map((micro) => {
+                            const slug = micro?.slug || nameToSlug(micro?.name ?? "");
+                            const name = micro?.name ?? slugToName(slug);
+                            const isActive =
+                              effectiveMicrolocation?.toLowerCase() === name?.toLowerCase() ||
+                              (microlocationSlugProp && slug === microlocationSlugProp);
+                            return (
+                              <Link
+                                key={micro?._id ?? slug ?? name}
+                                to={`/${slug}`}
+                                className={`flex-shrink-0 rounded-lg border-2 overflow-hidden transition-all duration-200 ${isActive
+                                    ? "border-primary bg-primary-50 shadow-sm"
+                                    : "border-border bg-surface hover:border-primary hover:bg-primary-50/50"
+                                  }`}
+                                style={{ minWidth: "140px", maxWidth: "180px" }}
+                              >
+                                {/* {micro?.image ? (
+                        <div className="aspect-[4/3] bg-secondary-100">
+                          <img
+                            src={micro.image}
+                            alt={name}
+                            className="w-full h-full object-cover"
+                          />
+                        </div>
+                      ) : (
+                        <div className="aspect-[4/3] bg-secondary-100 flex items-center justify-center">
+                          <Icon name="MapPin" size={28} className="text-text-secondary" />
+                        </div>
+                      )} */}
+                                <div className="p-2.5">
+                                  <p className={`text-sm font-medium truncate ${isActive ? "text-primary" : "text-text-primary"}`}>
+                                    {name}
+                                  </p>
+                                </div>
+                              </Link>
+                            );
+                          })}
+                        </div>
+                      </div>
+                    </div>
+                  )}
                   <div className="p-6">
+
                     {loading ? (
                       <div className="grid grid-cols-1 gap-6">
                         {[...Array(6)].map((_, index) => (
@@ -420,11 +569,10 @@ const PropertyListings = ({ projectStatus }) => {
                         ) : (
                           <div
                             className={`grid gap-6 transition-all duration-300
-              ${
-                isFilterOpen
-                  ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2"
-                  : "grid-cols-1 sm:grid-cols-4 lg:grid-cols-3"
-              }
+              ${isFilterOpen
+                                ? "grid-cols-1 sm:grid-cols-2 lg:grid-cols-2"
+                                : "grid-cols-1 sm:grid-cols-4 lg:grid-cols-3"
+                              }
             `}
                           >
                             {filteredProperties.map((property, index) => (
@@ -435,8 +583,8 @@ const PropertyListings = ({ projectStatus }) => {
                                 onSave={handlePropertySave}
                               />
                             ))}
-                          
-                           </div>
+
+                          </div>
                         )}
                       </>
                     )}
@@ -462,11 +610,10 @@ const PropertyListings = ({ projectStatus }) => {
                             key={page}
                             type="button"
                             onClick={() => loadProjects(page)}
-                            className={`min-w-[2.5rem] px-4 py-2 border rounded-md text-sm font-medium ${
-                              currentPage === page
-                                ? "bg-primary text-white border-primary"
-                                : "bg-surface border-border text-text-primary hover:bg-secondary-100"
-                            }`}
+                            className={`min-w-[2.5rem] px-4 py-2 border rounded-md text-sm font-medium ${currentPage === page
+                              ? "bg-primary text-white border-primary"
+                              : "bg-surface border-border text-text-primary hover:bg-secondary-100"
+                              }`}
                           >
                             {page}
                           </button>
@@ -484,7 +631,7 @@ const PropertyListings = ({ projectStatus }) => {
                     </div>
                   )}
                 </div>
-                
+
 
                 {/* Map View */}
                 {/* <div className="w-2/5 border-l border-border">
@@ -597,3 +744,9 @@ const PropertyListings = ({ projectStatus }) => {
 };
 
 export default PropertyListings;
+
+/** Wrapper for dynamic route /:microlocationSlug - passes slug from URL to PropertyListings */
+export function PropertyListingsByMicrolocationRoute() {
+  const { microlocationSlug } = useParams();
+  return <PropertyListings microlocationSlug={microlocationSlug} />;
+}

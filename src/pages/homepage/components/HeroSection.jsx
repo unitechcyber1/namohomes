@@ -1,8 +1,10 @@
 import React, { useState, useEffect } from 'react';
+import { Link } from 'react-router-dom';
 import { motion } from 'framer-motion';
 import SearchInterface from '../../../components/ui/SearchInterface';
 import Image from '../../../components/AppImage';
 import { INDIAN_SEARCH_TAGS } from '../../../utils/indianFormatters';
+import { nameToSlug } from '../../../utils/slug';
 import residentialImg from '../../../assets/residential-image.jpg';
 import commercialImg from '../../../assets/commercial-image.jpg';
 
@@ -100,20 +102,20 @@ const HeroSection = ({ onSearch }) => {
               }
             }}
           >
-            {INDIAN_SEARCH_TAGS?.map((tag) => (
-              <motion.button
-                key={tag}
-                variants={{
-                  hidden: { opacity: 0, y: 10 },
-                  visible: { opacity: 1, y: 0 }
-                }}
-                onClick={() => onSearch({ query: tag })}
-                className="px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm
-                         hover:bg-white/30 transition-all border border-white/30"
-              >
-                {tag}
-              </motion.button>
-            ))}
+            {INDIAN_SEARCH_TAGS?.map((tag) => {
+              const slug = nameToSlug(tag);
+              return (
+                <motion.div key={tag} variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
+                  <Link
+                    to={slug ? `/${slug}` : `/property-listings?query=${encodeURIComponent(tag)}`}
+                    className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm
+                             hover:bg-white/30 transition-all border border-white/30"
+                  >
+                    {tag}
+                  </Link>
+                </motion.div>
+              );
+            })}
           </motion.div>
         </div>
       </div>

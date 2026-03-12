@@ -68,3 +68,17 @@ export const getProjectsByCategory = async (category) => {
     throw error;
   }
 };
+
+/**
+ * Get micro-locations for a city (e.g. gurugram).
+ * GET /api/client/micro-locations/:cityname
+ */
+export const getMicroLocations = async (cityName) => {
+  try {
+    const slug = String(cityName ?? "gurugram").trim().toLowerCase().replace(/\s+/g, "-");
+    const { data } = await api.get(`/api/client/micro-locations/${slug}`);
+    return data;
+  } catch (error) {
+    throw error;
+  }
+};

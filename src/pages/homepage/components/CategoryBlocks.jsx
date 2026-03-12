@@ -74,8 +74,8 @@ export default function CategoryBlocks() {
                                 transition={{ duration: 0.5, delay: index * 0.1 }}
                                 className={isLarge ? 'lg:col-span-2' : ''}
                             >
-                                {/* to={createPageUrl(`Listings?category=${category.slug}`)} */}
-                               <Link to={`/listings/${category.slug}`}>
+                                {/* Category slug to listing URL (residential, commercial, SCO in Gurgaon) */}
+                               <Link to={category.slug === 'residential' ? '/residential-properties-in-gurgaon' : category.slug === 'commercial' ? '/commercial-properties-in-gurgaon' : category.slug === 'sco_plots' ? '/sco-plots-in-gurgaon' : `/property-listings?propertyType=${category.slug}`}>
                                 <div className={`group relative overflow-hidden rounded-2xl ${isLarge ? 'h-72' : 'h-64'}`}>
                                     <img
                                         src={category.image_url || defaultCategories.find(c => c.slug === category.slug)?.image || 'https://images.unsplash.com/photo-1600596542815-ffad4c1539a9?w=600&q=80'}
