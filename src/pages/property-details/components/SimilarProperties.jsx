@@ -4,6 +4,7 @@ import { Link } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import { formatPriceForDisplay } from '../../../utils/indianFormatters';
+import { getPropertyDetailsUrl } from '../../../constants/routes';
 
 const SimilarProperties = ({ properties = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -119,7 +120,7 @@ const SimilarProperties = ({ properties = [] }) => {
             return (
               <Link
                 key={property?.id}
-                to={`/property-details?id=${property?.id}`}
+                to={getPropertyDetailsUrl(property)}
                 className="flex-shrink-0 w-80 md:w-96 group"
                 style={{ scrollSnapAlign: 'start' }}
               >
@@ -205,7 +206,7 @@ const SimilarProperties = ({ properties = [] }) => {
       {/* View All Link */}
       <div className="text-center pt-4">
         <Link
-          to="/property-listings"
+          to="/property-listings/gurugram"
           className="inline-flex items-center space-x-2 text-primary hover:text-primary-700 font-medium transition-colors duration-200"
         >
           <span>View All Properties</span>

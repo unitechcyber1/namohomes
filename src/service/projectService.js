@@ -30,6 +30,7 @@ export const searchProjects = async (params = {}) => {
 
 /**
  * Get single project by ID (MongoDB _id)
+ * GET /api/client/projects?id=...
  */
 export const getProjectById = async (id) => {
   try {

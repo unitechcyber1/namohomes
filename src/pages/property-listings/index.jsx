@@ -1,6 +1,9 @@
 import React, { useState, useEffect, useRef } from "react";
 import { useSearchParams, Link, useParams } from "react-router-dom";
 import Header from "../../components/ui/Header";
+import SEO from "../../components/SEO";
+import FooterSeoContent from "../../components/FooterSeoContent";
+import Footer from "../homepage/components/Footer";
 import Icon from "../../components/AppIcon";
 import FilterPanel from "./components/FilterPanel";
 import MapView from "./components/MapView";
@@ -8,8 +11,7 @@ import SortDropdown from "./components/SortDropdown";
 import { getProjects, getMicroLocations } from "../../service/projectService";
 import PropertyCard from "../../components/cards/PropertyCard";
 import { slugToName, nameToSlug } from "../../utils/slug";
-
-const MICROLOCATION_CITY = "gurugram";
+import { getPropertyListingsPath, DEFAULT_CITY_SLUG } from "../../constants/routes";
 
 const PropertyListings = ({
   projectStatus,
@@ -17,7 +19,11 @@ const PropertyListings = ({
   plansType,
   microlocationSlug: microlocationSlugProp,
 }) => {
+  const { citySlug, microlocationSlug: microlocationSlugFromParams } = useParams();
   const [searchParams, setSearchParams] = useSearchParams();
+  const effectiveCitySlug = citySlug ?? DEFAULT_CITY_SLUG;
+  const cityName = slugToName(effectiveCitySlug) || "Gurugram";
+  const effectiveMicrolocationSlug = microlocationSlugFromParams ?? microlocationSlugProp;
   const isNewLaunchPage = projectStatus === "New Launch";
   const [properties, setProperties] = useState([]);
   const [filteredProperties, setFilteredProperties] = useState([]);
@@ -36,8 +42,8 @@ const PropertyListings = ({
   const limit = 21;
 
   const effectiveMicrolocation =
-    microlocationSlugProp?.trim()
-      ? slugToName(microlocationSlugProp)
+    effectiveMicrolocationSlug?.trim()
+      ? slugToName(effectiveMicrolocationSlug)
       : searchParams?.get("microlocation") ?? "";
 
   const loadProjects = async (pageNumber = 1) => {
@@ -98,7 +104,7 @@ const PropertyListings = ({
   // Fetch microlocations for gurugram (shown at top of listing)
   useEffect(() => {
     let cancelled = false;
-    getMicroLocations(MICROLOCATION_CITY)
+    getMicroLocations("Gurugram")
       .then((res) => {
         if (cancelled) return;
         const list = Array.isArray(res) ? res : res?.data ?? res?.microLocations ?? res?.microlocations ?? [];
@@ -317,14 +323,14 @@ const PropertyListings = ({
     if (projectType === "residential") return "/residential-in-gurgaon";
     if (projectType === "commercial") return "/commercial-in-gurgaon";
     if (plansType === "sco") return "/sco-plots-in-gurgaon";
-    return "/property-listings";
+    return getPropertyListingsPath(effectiveCitySlug);
   };
   const getListingTitle = () => {
-    if (projectType === "residential") return "Residential Properties in Gurgaon";
-    if (projectType === "commercial") return "Commercial Properties in Gurgaon";
-    if (plansType === "sco") return "SCO Plots in Gurgaon";
+    if (projectType === "residential") return `Residential Properties in ${cityName}`;
+    if (projectType === "commercial") return `Commercial Properties in ${cityName}`;
+    if (plansType === "sco") return `SCO Plots in ${cityName}`;
     if (effectiveMicrolocation?.trim()) return `Properties in ${effectiveMicrolocation.trim()}`;
-    return null;
+    return `Properties in ${cityName}`;
   };
 
   // Get breadcrumb items
@@ -367,6 +373,7 @@ const PropertyListings = ({
   console.log(microlocations);
   return (
     <div className="min-h-screen bg-background">
+      <SEO />
       <Header />
       <main className="pt-16 lg:pt-18">
         {/* Breadcrumb */}
@@ -497,11 +504,11 @@ const PropertyListings = ({
                             const name = micro?.name ?? slugToName(slug);
                             const isActive =
                               effectiveMicrolocation?.toLowerCase() === name?.toLowerCase() ||
-                              (microlocationSlugProp && slug === microlocationSlugProp);
+                              (effectiveMicrolocationSlug && slug === effectiveMicrolocationSlug);
                             return (
                               <Link
                                 key={micro?._id ?? slug ?? name}
-                                to={`/${slug}`}
+                                to={`/property-listings/${effectiveCitySlug}/${slug}`}
                                 className={`flex-shrink-0 rounded-lg border-2 overflow-hidden transition-all duration-200 ${isActive
                                     ? "border-primary bg-primary-50 shadow-sm"
                                     : "border-border bg-surface hover:border-primary hover:bg-primary-50/50"
@@ -739,14 +746,10 @@ const PropertyListings = ({
           </div>
         </div>
       </main>
+      <FooterSeoContent />
+      <Footer />
     </div>
   );
 };
 
 export default PropertyListings;
-
-/** Wrapper for dynamic route /:microlocationSlug - passes slug from URL to PropertyListings */
-export function PropertyListingsByMicrolocationRoute() {
-  const { microlocationSlug } = useParams();
-  return <PropertyListings microlocationSlug={microlocationSlug} />;
-}

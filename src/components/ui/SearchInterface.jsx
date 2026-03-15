@@ -3,6 +3,7 @@ import { useNavigate } from 'react-router-dom';
 import Icon from '../AppIcon';
 import { INDIAN_PROPERTY_TYPES, INDIAN_PRICE_RANGES, INDIAN_CITIES, formatPriceForDisplay } from '../../utils/indianFormatters';
 import { searchProjects } from '../../service/projectService';
+import { getPropertyListingsPath, getPropertyDetailsUrl } from '../../constants/routes';
 
 const DEBOUNCE_MS = 350;
 const MIN_QUERY_LENGTH = 2;
@@ -107,7 +108,7 @@ const SearchInterface = ({ variant = 'hero', onSearch, initialFilters = {} }) =>
       Object.entries(searchParams)?.forEach(([key, value]) => {
         if (value) params?.append(key, value);
       });
-      navigate(`/property-listings?${params?.toString()}`);
+      navigate(`${getPropertyListingsPath()}?${params?.toString()}`);
     }
   };
 
@@ -119,7 +120,7 @@ const SearchInterface = ({ variant = 'hero', onSearch, initialFilters = {} }) =>
   const handleSelectProject = (project) => {
     setShowSuggestions(false);
     setSearchQuery(project?.name ?? '');
-    navigate(`/property-details?id=${project?._id}`);
+    navigate(getPropertyDetailsUrl(project));
   };
 
   const handleViewAllResults = () => {
@@ -127,7 +128,7 @@ const SearchInterface = ({ variant = 'hero', onSearch, initialFilters = {} }) =>
     const params = new URLSearchParams();
     if (searchQuery?.trim()) params.set('query', searchQuery.trim());
     if (location?.trim()) params.set('location', location.trim());
-    navigate(`/property-listings?${params?.toString()}`);
+    navigate(`${getPropertyListingsPath()}?${params?.toString()}`);
   };
 
   const clearFilters = () => {

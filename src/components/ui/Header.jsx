@@ -2,6 +2,7 @@ import React, { useState, useRef, useEffect } from 'react';
 import { Link, useLocation } from 'react-router-dom';
 import Icon from '../AppIcon';
 import logo from '../../assets/namohomes-logo.svg';
+import { getPropertyListingsPath } from '../../constants/routes';
 
 const Header = () => {
   const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
@@ -19,7 +20,7 @@ const Header = () => {
   const navigationItems = [
     {
       label: 'Search Properties',
-      path: '/property-listings',
+      path: getPropertyListingsPath(),
       icon: 'Search',
       roles: ['all']
     },
@@ -53,6 +54,9 @@ const Header = () => {
   }, [location.pathname]);
 
   const isActiveRoute = (path) => {
+    if (path?.startsWith?.('/property-listings')) {
+      return location.pathname.startsWith('/property-listings');
+    }
     return location.pathname === path;
   };
 

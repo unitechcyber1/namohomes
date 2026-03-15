@@ -3,6 +3,7 @@ import { Link } from 'react-router-dom';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import { formatArea, formatPriceForDisplay } from '../../../utils/indianFormatters';
+import { getPropertyDetailsUrl } from '../../../constants/routes';
 
 const PropertyCard = ({ 
   property, 
@@ -72,7 +73,7 @@ const PropertyCard = ({
   if (variant === 'list') {
     return (
       <Link
-        to={`/property-details?id=${property?.id}`}
+        to={getPropertyDetailsUrl(property)}
         className={`block card hover:shadow-elevation-2 transition-all duration-200 ease-out
                    ${isHighlighted ? 'ring-2 ring-primary shadow-elevation-2' : ''}`}
         onMouseEnter={() => setIsHovered(true)}
@@ -225,7 +226,7 @@ const PropertyCard = ({
   // Card variant (default)
   return (
     <Link
-      to={`/property-details?id=${property?.id}`}
+      to={getPropertyDetailsUrl(property)}
       className={`block card overflow-hidden hover:shadow-elevation-2 transition-all duration-200 ease-out
                  ${isHighlighted ? 'ring-2 ring-primary shadow-elevation-2' : ''}`}
       onMouseEnter={() => setIsHovered(true)}

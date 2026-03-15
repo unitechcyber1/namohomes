@@ -2,6 +2,8 @@ import React, { useState } from "react";
 import Icon from "../../components/AppIcon";
 import Header from "../../components/ui/Header";
 import Footer from "../homepage/components/Footer";
+import SEO from "../../components/SEO";
+import FooterSeoContent from "../../components/FooterSeoContent";
 import { sendContactLead } from "../../service/contactService";
 
 const ContactUsPage = () => {
@@ -61,6 +63,7 @@ const ContactUsPage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO />
       <Header />
 
       <main className="pt-16 lg:pt-18">
@@ -262,6 +265,7 @@ const ContactUsPage = () => {
           </div>
         </div>
       </main>
+      <FooterSeoContent />
       <Footer />
     </div>
   );

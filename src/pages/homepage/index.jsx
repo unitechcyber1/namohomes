@@ -1,9 +1,8 @@
 import React, { useState, useEffect } from 'react';
 
 import Header from '../../components/ui/Header';
-
-
-
+import SEO from '../../components/SEO';
+import FooterSeoContent from '../../components/FooterSeoContent';
 import HeroSection from './components/HeroSection';
 import FeaturedProperties from './components/FeaturedProperties';
 import QuickStats from './components/QuickStats';
@@ -30,12 +29,13 @@ const Homepage = () => {
     Object.entries(searchParams).forEach(([key, value]) => {
       if (value) params.append(key, value);
     });
-    window.location.href = `/property-listings?${params.toString()}`;
+    window.location.href = `/property-listings/gurugram?${params.toString()}`;
   };
 
   if (isLoading) {
     return (
       <div className="min-h-screen bg-background">
+        <SEO path="home" />
         <Header />
         <div className="pt-16 lg:pt-18">
           {/* Hero Skeleton */}
@@ -63,6 +63,7 @@ const Homepage = () => {
 
   return (
     <div className="min-h-screen bg-background">
+      <SEO path="home" />
       <Header />
       
       <main className="pt-16 lg:pt-18">
@@ -75,6 +76,7 @@ const Homepage = () => {
         <LeadCapture/>
       </main>
       
+      <FooterSeoContent />
       <Footer />
     </div>
   );

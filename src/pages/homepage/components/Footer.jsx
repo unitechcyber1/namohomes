@@ -12,7 +12,7 @@ const Footer = () => {
     {
       title: "For Buyers",
       links: [
-        { label: "Search Properties", path: "/property-listings" },
+        { label: "Search Properties", path: "/property-listings/gurugram" },
         { label: "Mortgage Calculator", path: "/mortgage-calculator" },
         { label: "Buyer\'s Guide", path: "/buyers-guide" },
         { label: "Neighborhood Info", path: "/neighborhoods" },
@@ -169,7 +169,7 @@ const Footer = () => {
               </li>
               <li>
                 <Link
-                  to="/property-listings"
+                  to="/property-listings/gurugram"
                   className="text-slate-400 hover:text-amber-400 transition-colors"
                 >
                   All Properties
@@ -198,8 +198,8 @@ const Footer = () => {
           <div>
             <h3 className="text-lg font-semibold mb-6">Property Types</h3>
             <ul className="space-y-3">
-              {categories.slice(0, 5).map((cat) => (
-                <li key={cat.id}>
+              {categories.slice(0, 5).map((cat, index) => (
+                <li key={cat._id ?? cat.id ?? cat.slug ?? `cat-${index}`}>
                   <Link
                     to={createPageUrl(`Listings/${cat.slug}`)}
                     className="text-slate-400 hover:text-amber-400 transition-colors"
