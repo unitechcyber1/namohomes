@@ -160,11 +160,11 @@ const NewLaunchProjects = () => {
 
         {/* Properties Grid */}
         <div className="grid grid-cols-1 md:grid-cols-2 lg:grid-cols-3 gap-6 lg:gap-8 mb-12">
-          {projects?.slice(0, 6).map((property) => (
+          {projects?.slice(0, 6).map((property, index) => (
             <PropertyCard
-              key={property.id}
+              key={property._id ?? property.id ?? `new-launch-${index}`}
               property={property}
-              saved={savedProperties.has(property.id)}
+              saved={savedProperties.has(property._id ?? property.id)}
               onSave={handleSaveProperty}
             />
           ))}
@@ -173,7 +173,7 @@ const NewLaunchProjects = () => {
         {/* View All Button */}
         <div className="text-center">
           <Link
-            to="/property-listings"
+            to="/property-listings/gurugram"
             className="inline-flex items-center space-x-2 px-8 py-3 bg-primary text-white rounded-lg
                       hover:bg-primary-600 transition-all duration-200 ease-out shadow-elevation-1
                       hover:shadow-elevation-2 micro-interaction"

@@ -107,7 +107,7 @@ const HeroSection = ({ onSearch }) => {
               return (
                 <motion.div key={tag} variants={{ hidden: { opacity: 0, y: 10 }, visible: { opacity: 1, y: 0 } }}>
                   <Link
-                    to={slug ? `/${slug}` : `/property-listings?query=${encodeURIComponent(tag)}`}
+                    to={slug ? `/${slug}` : `/property-listings/gurugram?query=${encodeURIComponent(tag)}`}
                     className="inline-block px-4 py-2 bg-white/20 backdrop-blur-sm text-white rounded-full text-sm
                              hover:bg-white/30 transition-all border border-white/30"
                   >

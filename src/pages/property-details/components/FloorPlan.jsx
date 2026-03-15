@@ -111,12 +111,20 @@ const FloorPlan = ({ plans, name, contactPhone }) => {
         {floorPlans.map((item, i) => {
           const imgUrl = imageUrl(item);
           const title = [item?.name, item?.area, sizeSq].filter(Boolean).join(" ");
+          const sold = Boolean(item?.is_sold ?? item?.isSold);
           return (
             <div
               key={i}
-              className="card overflow-hidden border border-border bg-surface flex-shrink-0 w-[min(100%,280px)] sm:w-72"
+              className={`card overflow-hidden border bg-surface flex-shrink-0 w-[min(100%,280px)] sm:w-72 ${sold ? "border-border opacity-90" : "border-border"}`}
             >
               <div className="relative aspect-[4/3] bg-secondary-100">
+                {sold && (
+                  <div className="absolute inset-0 z-10 flex items-center justify-center bg-black/50 rounded-t-lg">
+                    <span className="px-4 py-2 bg-error text-white text-sm font-semibold rounded-lg shadow-elevation-2">
+                      Sold Out
+                    </span>
+                  </div>
+                )}
                 {imgUrl ? (
                   <img
                     src={imgUrl}
@@ -148,7 +156,9 @@ const FloorPlan = ({ plans, name, contactPhone }) => {
                   <p className="text-xs text-text-secondary mb-0.5">
                     Sale Price
                   </p>
-                  {isCallForPrice(item?.sale_price) ? (
+                  {sold ? (
+                    <p className="text-sm font-semibold text-error">Sold Out</p>
+                  ) : isCallForPrice(item?.sale_price) ? (
                     <a
                       href={`tel:${phone.replace(/\s/g, "")}`}
                       className="text-sm font-medium text-error hover:underline"

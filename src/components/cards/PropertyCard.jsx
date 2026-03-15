@@ -5,15 +5,12 @@ import Icon from "../AppIcon";
 import Image from "../AppImage";
 import { formatINR, formatArea, formatPriceForDisplay } from "../../utils/indianFormatters";
 import ContactForm from "../../pages/property-details/components/ContactForm";
-
-
-
-
+import { getPropertyDetailsUrl } from "../../constants/routes";
 
 const PropertyCard = ({ property, saved, onSave }) => {
   const [showForm, setShowForm] = useState(false);
 
-  const detailUrl = `/property-details?id=${property?._id}`;
+  const detailUrl = getPropertyDetailsUrl(property);
 
   return (
     <div className="card overflow-hidden hover:shadow-elevation-2 transition-all duration-200 ease-out group">
@@ -47,7 +44,7 @@ const PropertyCard = ({ property, saved, onSave }) => {
           onClick={(e) => {
             e.preventDefault();
             e.stopPropagation();
-            onSave(property?.id);
+            onSave(property?._id ?? property?.id);
           }}
           className={`absolute top-3 right-3 w-9 h-9 rounded-full flex items-center justify-center z-10
             transition-all duration-200 ease-out ${saved

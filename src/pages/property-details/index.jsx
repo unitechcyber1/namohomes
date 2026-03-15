@@ -1,6 +1,6 @@
 // src/pages/property-details/index.jsx
 import React, { useState, useEffect } from 'react';
-import { useSearchParams, Link } from 'react-router-dom';
+import { useSearchParams, useParams, Link } from 'react-router-dom';
 import Header from '../../components/ui/Header';
 import Icon from '../../components/AppIcon';
 import Image from '../../components/AppImage';
@@ -23,6 +23,7 @@ import SimilarProperties from './components/SimilarProperties';
 import LoadingState from './components/LoadingState';
 
 const PropertyDetails = () => {
+  const { slug: slugFromParams } = useParams();
   const [searchParams] = useSearchParams();
   const [property, setProperty] = useState(null);
   const [loading, setLoading] = useState(true);
@@ -33,8 +34,9 @@ const PropertyDetails = () => {
   const [showContactForm, setShowContactForm] = useState(false);
   const [similarProperties, setSimilarProperties] = useState([]);
 
+  const slugFromQuery = searchParams?.get('slug');
   const propertyId = searchParams?.get('id');
-  const slug = searchParams?.get('slug');
+  const slug = slugFromParams ?? slugFromQuery;
 
   useEffect(() => {
     const fetchProperty = async () => {
@@ -65,6 +67,7 @@ const PropertyDetails = () => {
       setProperty(null);
     }
   }, [propertyId, slug]);
+
   const handleSave = () => {
     setIsSaved(!isSaved);
     // In real app, sync with backend
@@ -86,7 +89,7 @@ const PropertyDetails = () => {
   const getBreadcrumbs = () => {
     const breadcrumbs = [
       { label: 'Home', path: '/homepage' },
-      { label: 'Properties', path: '/property-listings' },
+      { label: 'Properties', path: '/property-listings/gurugram' },
       { label: property?.title || 'Property Details', path: null }
     ];
     return breadcrumbs;
@@ -116,7 +119,7 @@ const PropertyDetails = () => {
                 {error || "The property you're looking for doesn't exist or has been removed."}
               </p>
               <Link
-                to="/property-listings"
+                to="/property-listings/gurugram"
                 className="inline-flex items-center space-x-2 bg-primary text-white px-6 py-3 rounded-md hover:bg-primary-700 transition-all duration-200"
               >
                 <Icon name="ArrowLeft" size={16} />
