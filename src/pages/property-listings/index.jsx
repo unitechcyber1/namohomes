@@ -51,6 +51,9 @@ const PropertyListings = ({
       setLoading(true);
       const query = searchParams?.get("query");
       const locationParam = searchParams?.get("location");
+      const plansTypeParam = searchParams?.get("plans_type");
+      const minPriceParam = searchParams?.get("min_price");
+      const maxPriceParam = searchParams?.get("max_price");
       const params = {
         page: pageNumber,
         limit,
@@ -61,6 +64,9 @@ const PropertyListings = ({
       if (projectStatus) params.project_status = projectStatus;
       if (projectType) params.project_type = projectType;
       if (plansType) params.plans_type = plansType;
+      else if (plansTypeParam?.trim()) params.plans_type = plansTypeParam.trim();
+      if (minPriceParam != null && minPriceParam !== "") params.min_price = minPriceParam;
+      if (maxPriceParam != null && maxPriceParam !== "") params.max_price = maxPriceParam;
       if (sortBy === "low_to_high" || sortBy === "high_to_low") {
         params.price_sort = sortBy;
       }
@@ -88,12 +94,15 @@ const PropertyListings = ({
     }
   };
 
-  // Load projects when page mounts or search params (from "View all results") change
+  // Load projects when page mounts or filters change (reset to page 1 when filters change)
   useEffect(() => {
     loadProjects(1);
   }, [
     searchParams?.get("query") ?? "",
     searchParams?.get("location") ?? "",
+    searchParams?.get("plans_type") ?? "",
+    searchParams?.get("min_price") ?? "",
+    searchParams?.get("max_price") ?? "",
     effectiveMicrolocation,
     projectStatus,
     projectType,
@@ -124,18 +133,18 @@ const PropertyListings = ({
   useEffect(() => {
     if (properties?.length === 0 && !loading) return;
     applyFilters(properties);
-  }, [properties, searchParams?.toString(), sortBy, projectType, plansType, effectiveMicrolocation]);
+  }, [properties, searchParams?.toString(), sortBy, projectType, plansType, effectiveMicrolocation, searchParams?.get("plans_type")]);
 
   // Apply filters based on search params
   const applyFilters = (propertiesToFilter = properties) => {
     let filtered = [...propertiesToFilter];
-    console.log(filtered);
     const query = searchParams?.get("query");
     const location = searchParams?.get("location");
     const microlocation = effectiveMicrolocation?.trim() || searchParams?.get("microlocation");
     const propertyType = searchParams?.get("propertyType");
-    const minPrice = searchParams?.get("minPrice");
-    const maxPrice = searchParams?.get("maxPrice");
+    const plansTypeParam = searchParams?.get("plans_type");
+    const minPrice = searchParams?.get("min_price");
+    const maxPrice = searchParams?.get("max_price");
     const bedrooms = searchParams?.get("bedrooms");
     const bathrooms = searchParams?.get("bathrooms");
 
@@ -182,6 +191,7 @@ const PropertyListings = ({
         (property) => property?.propertyType === propertyType,
       );
     }
+    // Skip client-side plans_type filter: API is already called with plans_type, so results are server-filtered.
     if (projectType) {
       filtered = filtered?.filter(
         (property) =>
@@ -195,15 +205,27 @@ const PropertyListings = ({
       );
     }
 
-    if (minPrice) {
+    const getPrice = (p) => {
+      // Listings use `starting_price`; some payloads may use `price`
+      const raw = p?.price ?? p?.starting_price ?? p?.startingPrice;
+      const n = Number(raw);
+      return Number.isFinite(n) ? n : 0;
+    };
+
+    const minPriceNum =
+      minPrice != null && minPrice !== "" ? Number(minPrice) : null;
+    const maxPriceNum =
+      maxPrice != null && maxPrice !== "" ? Number(maxPrice) : null;
+
+    if (minPriceNum != null) {
       filtered = filtered?.filter(
-        (property) => property?.price >= parseInt(minPrice),
+        (property) => getPrice(property) >= minPriceNum,
       );
     }
 
-    if (maxPrice) {
+    if (maxPriceNum != null) {
       filtered = filtered?.filter(
-        (property) => property?.price <= parseInt(maxPrice),
+        (property) => getPrice(property) <= maxPriceNum,
       );
     }
 
@@ -254,13 +276,14 @@ const PropertyListings = ({
     setFilteredProperties(sorted);
   };
 
-  // Handle filter changes
+  // Handle filter changes (only scalar filter keys go into URL; skip arrays e.g. amenities)
   const handleFilterChange = (filters) => {
     const newSearchParams = new URLSearchParams();
 
     Object.entries(filters)?.forEach(([key, value]) => {
-      if (value && value !== "" && value !== "all") {
-        newSearchParams?.set(key, value);
+      if (Array.isArray(value)) return;
+      if (value != null && value !== "" && value !== "all") {
+        newSearchParams.set(key, value);
       }
     });
 
@@ -349,6 +372,7 @@ const PropertyListings = ({
     const location = searchParams?.get("location");
     const microlocationParam = searchParams?.get("microlocation");
     const propertyTypeParam = searchParams?.get("propertyType");
+    const plansTypeParam = searchParams?.get("plans_type");
 
     if (location) {
       breadcrumbs?.push({ label: location, path: null });
@@ -357,6 +381,13 @@ const PropertyListings = ({
     if (effectiveMicrolocation?.trim() || microlocationParam?.trim()) {
       breadcrumbs?.push({
         label: effectiveMicrolocation?.trim() || microlocationParam?.trim(),
+        path: null,
+      });
+    }
+
+    if (plansTypeParam?.trim()) {
+      breadcrumbs?.push({
+        label: plansTypeParam?.charAt(0)?.toUpperCase() + plansTypeParam?.slice(1).replace(/-/g, " "),
         path: null,
       });
     }
@@ -370,9 +401,9 @@ const PropertyListings = ({
 
     return breadcrumbs;
   };
-  console.log(microlocations);
+
   return (
-    <div className="min-h-screen bg-background">
+    <div className="bg-background">
       <SEO />
       <Header />
       <main className="pt-16 lg:pt-18">
@@ -478,8 +509,9 @@ const PropertyListings = ({
                 location: searchParams?.get("location") || "",
                 microlocation: effectiveMicrolocation?.trim() || searchParams?.get("microlocation") || "",
                 propertyType: searchParams?.get("propertyType") || "",
-                minPrice: searchParams?.get("minPrice") || "",
-                maxPrice: searchParams?.get("maxPrice") || "",
+                plans_type: searchParams?.get("plans_type") || "",
+                min_price: searchParams?.get("min_price") || "",
+                max_price: searchParams?.get("max_price") || "",
                 bedrooms: searchParams?.get("bedrooms") || "",
                 bathrooms: searchParams?.get("bathrooms") || "",
               }}

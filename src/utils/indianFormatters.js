@@ -87,16 +87,16 @@ export const formatPriceForDisplay = (price) => {
 // Property type mappings for Indian market
 export const INDIAN_PROPERTY_TYPES = [
   { value: '', label: 'All Property Types' },
-  { value: 'flat', label: 'Flat/Apartment' },
-  { value: 'independent-house', label: 'Independent House/Villa' },
-  { value: 'builder-floor', label: 'Builder Floor' },
-  { value: 'residential-plot', label: 'Residential Plot' },
-  { value: 'studio', label: 'Studio Apartment' },
+  { value: 'apartment', label: 'Flat/Apartment' },
+  { value: 'villa', label: 'Independent House/Villa' },
+  { value: 'floor', label: 'Builder Floor' },
+  { value: 'plot', label: 'Residential Plot' },
+  { value: 'studio apartment', label: 'Studio Apartment' },
   { value: 'penthouse', label: 'Penthouse' },
   { value: 'commercial', label: 'Commercial Space' },
   { value: 'office', label: 'Office Space' },
   { value: 'shop', label: 'Shop/Showroom' },
-  { value: 'agricultural', label: 'Agricultural Land' }
+  { value: 'mall', label: 'Mall' }
 ];
 
 // Indian price ranges in INR
