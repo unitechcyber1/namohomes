@@ -95,6 +95,15 @@ const Footer = () => {
     },
   ];
 
+  /** Matches CategoryBlocks + app routes; do not use createPageUrl (it breaks leading slashes). */
+  const getPropertyTypeListingPath = (slug) => {
+    if (!slug) return "/property-listings/gurugram";
+    if (slug === "residential") return "/residential-properties-in-gurgaon";
+    if (slug === "commercial") return "/commercial-properties-in-gurgaon";
+    if (slug === "sco_plots") return "/sco-plots-in-gurgaon";
+    return `/property-listings/gurugram?plans_type=${encodeURIComponent(slug)}`;
+  };
+
   const socialLinks = [
     { name: "Facebook", icon: "Facebook", url: "https://facebook.com" },
     { name: "Twitter", icon: "Twitter", url: "https://twitter.com" },
@@ -201,7 +210,7 @@ const Footer = () => {
               {categories.slice(0, 5).map((cat, index) => (
                 <li key={cat._id ?? cat.id ?? cat.slug ?? `cat-${index}`}>
                   <Link
-                    to={createPageUrl(`Listings/${cat.slug}`)}
+                    to={getPropertyTypeListingPath(cat.slug)}
                     className="text-slate-400 hover:text-amber-400 transition-colors"
                   >
                     {cat.name}

@@ -17,8 +17,9 @@ const FilterPanel = ({
     location: '',
     microlocation: '',
     propertyType: '',
-    minPrice: '',
-    maxPrice: '',
+    plans_type: '',
+    min_price: '',
+    max_price: '',
     bedrooms: '',
     bathrooms: '',
     minSqft: '',
@@ -71,8 +72,8 @@ const FilterPanel = ({
   const handlePriceRangeSelect = (range) => {
     const newFilters = {
       ...filters,
-      minPrice: range?.min,
-      maxPrice: range?.max
+      min_price: range?.min ?? '',
+      max_price: range?.max ?? ''
     };
     setFilters(newFilters);
     onFilterChange(newFilters);
@@ -95,8 +96,9 @@ const FilterPanel = ({
       location: '',
       microlocation: '',
       propertyType: '',
-      minPrice: '',
-      maxPrice: '',
+      plans_type: '',
+      min_price: '',
+      max_price: '',
       bedrooms: '',
       bathrooms: '',
       minSqft: '',
@@ -246,10 +248,10 @@ const FilterPanel = ({
                       >
                         <input
                           type="radio"
-                          name="propertyType"
-                          value={type?.value}
-                          checked={filters?.propertyType === type?.value}
-                          onChange={(e) => handleFilterChange('propertyType', e?.target?.value)}
+                          name="plans_type"
+                          value={type?.value ?? ''}
+                          checked={(filters?.plans_type ?? '') === (type?.value ?? '')}
+                          onChange={(e) => handleFilterChange('plans_type', e?.target?.value ?? '')}
                           className="w-4 h-4 text-primary focus:ring-primary-500"
                         />
                         <span className="text-sm text-text-secondary">{type?.label}</span>
@@ -281,7 +283,7 @@ const FilterPanel = ({
                         key={range?.value}
                         onClick={() => handlePriceRangeSelect(range)}
                         className={`w-full text-left px-3 py-2 rounded-md text-sm transition-colors duration-200 ${
-                          filters?.minPrice === range?.min && filters?.maxPrice === range?.max
+                          filters?.min_price === (range?.min ?? '') && filters?.max_price === (range?.max ?? '')
                             ? 'bg-primary text-white' :'hover:bg-secondary-100 text-text-secondary'
                         }`}
                       >
