@@ -498,7 +498,7 @@ const PropertyListings = ({
 
         {/* Main Content */}
         <div className="max-w-7xl mx-auto">
-          <div className="flex">
+          <div className="flex items-start gap-0">
             {/* Filter Panel */}
             <FilterPanel
               isOpen={isFilterOpen}
@@ -518,11 +518,11 @@ const PropertyListings = ({
             />
 
             {/* Content Area */}
-            <div className="flex-1 min-w-0">
-              {/* Desktop Split View */}
-              <div className="hidden lg:flex h-[calc(100vh-200px)]">
+            <div className="flex-1 min-w-0 min-h-0">
+              {/* Desktop: single column — use document scroll so footer stays reachable (no nested overflow trap) */}
+              <div className="hidden lg:block">
                 {/* Property List */}
-                <div className="w-full overflow-y-auto">
+                <div className="w-full">
                   {/* Microlocations strip - clickable cards linking to /slug */}
                   {microlocations?.length > 0 && (
                     <div className="bg-surface border-b border-border">
