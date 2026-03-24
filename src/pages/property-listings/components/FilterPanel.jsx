@@ -129,16 +129,19 @@ const FilterPanel = ({
           onClick={onClose}
         />
       )}
-      {/* Filter Panel */}
-      <div className={`
-        fixed lg:relative top-0 left-0 h-full w-80 bg-surface border-r border-border z-modal
+      {/* Filter Panel — mobile: drawer; desktop (lg): sticky under header, max viewport height, inner scroll */}
+      <div
+        className={`
+        fixed lg:sticky top-0 left-0 h-full w-80 bg-surface border-r border-border z-modal
         transform transition-transform duration-300 ease-out
-        ${isOpen ? 'translate-x-0' : '-translate-x-full lg:translate-x-0'}
-        ${isOpen ? 'lg:block' : 'lg:hidden'}
-      `}>
-        <div className="h-full flex flex-col">
+        lg:top-18 lg:z-20 lg:self-start lg:h-auto lg:max-h-[calc(100vh-4.5rem)] lg:shadow-[0_1px_0_rgba(15,23,42,0.06)]
+        ${isOpen ? "translate-x-0" : "-translate-x-full lg:translate-x-0"}
+        ${isOpen ? "lg:block" : "lg:hidden"}
+      `}
+      >
+        <div className="flex h-full min-h-0 max-h-full flex-col lg:max-h-[calc(100vh-4.5rem)]">
           {/* Header */}
-          <div className="flex items-center justify-between p-4 border-b border-border">
+          <div className="flex shrink-0 items-center justify-between p-4 border-b border-border bg-surface">
             <h2 className="text-lg font-semibold text-text-primary">Filters</h2>
             <div className="flex items-center space-x-2">
               {hasActiveFilters && (
@@ -158,8 +161,8 @@ const FilterPanel = ({
             </div>
           </div>
 
-          {/* Filter Content */}
-          <div className="flex-1 overflow-y-auto">
+          {/* Filter Content — scrolls inside panel only; does not extend page into footer */}
+          <div className="min-h-0 flex-1 overflow-y-auto overscroll-contain [scrollbar-gutter:stable]">
             <div className="p-4 space-y-6">
               {/* Search Query */}
               <div>
@@ -430,7 +433,7 @@ const FilterPanel = ({
           </div>
 
           {/* Apply Button */}
-          <div className="p-4 border-t border-border">
+          <div className="shrink-0 border-t border-border bg-surface p-4">
             <button
               onClick={onClose}
               className="w-full py-3 bg-primary text-white rounded-md font-medium hover:bg-primary-600 transition-colors duration-200"

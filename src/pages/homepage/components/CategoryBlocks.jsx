@@ -55,7 +55,7 @@ export default function CategoryBlocks() {
                         Explore By Property Type
                     </h2>
                     <p className="text-lg text-slate-600 max-w-2xl mx-auto">
-                        From coworking spaces to luxury residences, find exactly what you're looking for.
+                        From commercial properties to luxury residences, find exactly what you're looking for.
                     </p>
                 </motion.div>
 

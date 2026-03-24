@@ -9,6 +9,7 @@ import QuickStats from './components/QuickStats';
 import AgentSpotlight from './components/AgentSpotlight';
 import Footer from './components/Footer';
 import NewLaunchProjects from './components/NewLaunchProjects';
+import PopularBuilders from './components/PopularBuilders';
 import CategoryBlocks from './components/CategoryBlocks';
 import LeadCapture from './components/LeadCapture';
 
@@ -68,9 +69,10 @@ const Homepage = () => {
       
       <main className="pt-16 lg:pt-18">
         <HeroSection onSearch={handleSearch} />
-        <FeaturedProperties />
-        <NewLaunchProjects/>
+        {/* <FeaturedProperties /> */}
         <CategoryBlocks/>
+        <NewLaunchProjects/>
+        <PopularBuilders />
         <QuickStats />
         <AgentSpotlight />
         <LeadCapture/>

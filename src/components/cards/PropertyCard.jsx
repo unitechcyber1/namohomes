@@ -25,9 +25,9 @@ const PropertyCard = ({ property, saved, onSave }) => {
             />
 
             {/* Featured Badge */}
-            {property?.tagline && (
+            {property?.project_tag && (
               <div className="absolute top-3 left-3 px-3 py-1 bg-primary text-white text-xs font-semibold rounded-full">
-                FEATURED
+                {property?.project_tag?.toUpperCase()}
               </div>
             )}
 
