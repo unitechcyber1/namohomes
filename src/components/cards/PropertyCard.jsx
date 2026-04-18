@@ -6,6 +6,7 @@ import Image from "../AppImage";
 import { formatINR, formatArea, formatPriceForDisplay } from "../../utils/indianFormatters";
 import ContactForm from "../../pages/property-details/components/ContactForm";
 import { getPropertyDetailsUrl } from "../../constants/routes";
+import { getLocationLine } from "../../utils/locationDisplay";
 
 const PropertyCard = ({ property, saved, onSave }) => {
   const [showForm, setShowForm] = useState(false);
@@ -68,7 +69,7 @@ const PropertyCard = ({ property, saved, onSave }) => {
           </h3>
           <p className="text-sm text-text-secondary flex items-center">
             <Icon name="MapPin" size={14} className="mr-1 flex-shrink-0" />
-            {property?.location?.address}
+            {getLocationLine(property)}
           </p>
         </Link>
 

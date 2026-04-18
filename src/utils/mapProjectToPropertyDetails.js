@@ -3,6 +3,8 @@
  * Handles populated refs (builder, images[].image, location.city/state/country, amenties, etc.)
  */
 
+import { pickNearbyDetail } from "./nearbyPlaces";
+
 /**
  * Parse Indian price string (e.g. "85 Lac", "1.5 Cr", "8500000") to number
  */
@@ -162,5 +164,11 @@ export function mapProjectToPropertyDetails(project) {
     brochure: project.brochure,
     master_plan: project.master_plan,
     location_map: project.location_map,
+    metro_detail: pickNearbyDetail(project, "metro_detail", "metroDetail"),
+    school_detail: pickNearbyDetail(project, "school_detail", "schoolDetail"),
+    restro_detail: pickNearbyDetail(project, "restro_detail", "restroDetail"),
+    hospital_detail: pickNearbyDetail(project, "hospital_detail", "hospitalDetail"),
+    college_detail: pickNearbyDetail(project, "college_detail", "collegeDetail"),
+    market_detail: pickNearbyDetail(project, "market_detail", "marketDetail"),
   };
 }

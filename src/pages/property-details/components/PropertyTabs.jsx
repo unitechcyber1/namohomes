@@ -1,6 +1,7 @@
 // src/pages/property-details/components/PropertyTabs.jsx
 import React, { useRef, useState } from 'react';
 import Icon from '../../../components/AppIcon';
+import { parseNearbySubdoc, pickNearbyDetail } from '../../../utils/nearbyPlaces';
 
 const PropertyTabs = ({ property, activeTab, onTabChange }) => {
   const mapRef = useRef(null);
@@ -10,7 +11,7 @@ const PropertyTabs = ({ property, activeTab, onTabChange }) => {
     { id: 'description', label: 'Description', icon: 'FileText' },
     { id: 'amenities', label: 'Amenities', icon: 'Star' },
     { id: 'location', label: 'Location', icon: 'MapPin' },
-    { id: 'schools', label: 'Schools', icon: 'GraduationCap' }
+    { id: 'nearby', label: 'Near By', icon: 'MapPinned' },
   ];
 
   const isHtml = (str) => {
@@ -205,49 +206,111 @@ const PropertyTabs = ({ property, activeTab, onTabChange }) => {
     </div>
   );
 
-  const renderSchools = () => (
-    <div>
-      {property?.schools && property.schools.length > 0 ? (
-        <div className="space-y-4">
-          {property.schools.map((school, index) => (
-            <div key={index} className="p-4 bg-background rounded-md">
-              <div className="flex items-center justify-between mb-2">
-                <div>
-                  <h3 className="font-semibold text-text-primary">{school.name}</h3>
-                  <p className="text-sm text-text-secondary">{school.type}</p>
-                </div>
-                <div className="text-right">
-                  <div className="flex items-center space-x-1">
-                    <span className="text-lg font-bold text-primary">{school.rating}</span>
-                    <span className="text-sm text-text-secondary">/10</span>
-                  </div>
-                  <div className="flex items-center space-x-1">
-                    {[...Array(10)].map((_, i) => (
-                      <div
-                        key={i}
-                        className={`w-2 h-2 rounded-full ${
-                          i < school.rating ? 'bg-primary' : 'bg-secondary-200'
-                        }`}
-                      />
-                    ))}
-                  </div>
-                </div>
-              </div>
-              <div className="flex items-center space-x-2 text-sm text-text-secondary">
-                <Icon name="MapPin" size={14} />
-                <span>{school.distance}</span>
-              </div>
+  const formatNearbyDistance = (distance) => {
+    if (distance == null || Number.isNaN(Number(distance))) return null;
+    return `${Number(distance)} km`;
+  };
+
+  /** Prefer mapped fields; also resolve from raw API shape if mapper missed a path */
+  const nearbySections = [
+    {
+      key: "metro",
+      label: "Metro",
+      icon: "TrainFront",
+      isNearKey: "is_near_metro",
+      snake: "metro_detail",
+      camel: "metroDetail",
+    },
+    {
+      key: "school",
+      label: "School",
+      icon: "School",
+      isNearKey: "is_near_school",
+      snake: "school_detail",
+      camel: "schoolDetail",
+    },
+    {
+      key: "restro",
+      label: "Restaurant",
+      icon: "Utensils",
+      isNearKey: "is_near_restro",
+      snake: "restro_detail",
+      camel: "restroDetail",
+    },
+    {
+      key: "hospital",
+      label: "Hospital",
+      icon: "Hospital",
+      isNearKey: "is_near_hospital",
+      snake: "hospital_detail",
+      camel: "hospitalDetail",
+    },
+    {
+      key: "college",
+      label: "College",
+      icon: "GraduationCap",
+      isNearKey: "is_near_college",
+      snake: "college_detail",
+      camel: "collegeDetail",
+    },
+    {
+      key: "market",
+      label: "Market",
+      icon: "Store",
+      isNearKey: "is_near_market",
+      snake: "market_detail",
+      camel: "marketDetail",
+    },
+  ];
+
+  const renderNearby = () => {
+    const blocks = nearbySections
+      .map((section) => {
+        const raw =
+          property?.[section.snake] ??
+          property?.[section.camel] ??
+          pickNearbyDetail(property, section.snake, section.camel);
+        const parsed = parseNearbySubdoc(raw, section.isNearKey);
+        if (!parsed) return null;
+
+        const distLabel = formatNearbyDistance(parsed.distance);
+
+        return (
+          <div key={section.key} className="rounded-lg border border-border bg-surface p-4">
+            <div className="mb-3 flex flex-wrap items-center gap-2">
+              <Icon name={section.icon} size={20} className="text-primary shrink-0" />
+              <h3 className="text-lg font-semibold text-text-primary">{section.label}</h3>
+              {parsed.isNear && (
+                <span className="rounded-full bg-success-100 px-2.5 py-0.5 text-xs font-medium text-success">
+                  Nearby
+                </span>
+              )}
             </div>
-          ))}
-        </div>
-      ) : (
+            <div className="space-y-1 rounded-md border border-border bg-background px-3 py-3">
+              <p className="font-medium text-text-primary">{parsed.name}</p>
+              {distLabel && (
+                <p className="text-sm text-text-secondary">
+                  <span className="text-text-secondary">Distance: </span>
+                  <span className="font-medium text-text-primary">{distLabel}</span>
+                </p>
+              )}
+            </div>
+          </div>
+        );
+      })
+      .filter(Boolean);
+
+    if (blocks.length === 0) {
+      return (
         <div className="text-center py-8">
-          <Icon name="GraduationCap" size={48} className="text-secondary mx-auto mb-4" />
-          <p className="text-text-secondary">No school information available</p>
+          <Icon name="MapPinned" size={48} className="text-secondary mx-auto mb-4" />
+          <p className="text-text-secondary">No nearby places information available for this project</p>
         </div>
-      )}
-    </div>
-  );
+      );
+    }
+
+    return <div className="space-y-6">{blocks}</div>;
+  };
 
   const renderTabContent = () => {
     switch (activeTab) {
@@ -257,8 +320,8 @@ const PropertyTabs = ({ property, activeTab, onTabChange }) => {
         return renderAmenities();
       case 'location':
         return renderLocation();
-      case 'schools':
-        return renderSchools();
+      case 'nearby':
+        return renderNearby();
       default:
         return renderDescription();
     }

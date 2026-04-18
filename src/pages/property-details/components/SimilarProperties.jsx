@@ -5,6 +5,7 @@ import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import { formatPriceForDisplay } from '../../../utils/indianFormatters';
 import { getPropertyDetailsUrl } from '../../../constants/routes';
+import { getLocationLine } from '../../../utils/locationDisplay';
 
 const SimilarProperties = ({ properties = [] }) => {
   const [currentIndex, setCurrentIndex] = useState(0);
@@ -161,7 +162,7 @@ const SimilarProperties = ({ properties = [] }) => {
                     </div>
                     
                     <p className="text-text-secondary text-sm mb-3 line-clamp-1">
-                      {property?.address}
+                      {getLocationLine(property)}
                     </p>
                     
                     {/* Property Features */}
