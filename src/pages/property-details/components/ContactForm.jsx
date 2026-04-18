@@ -1,7 +1,13 @@
 // src/pages/property-details/components/ContactForm.jsx
-import React, { useState } from "react";
+import React, { useState, useEffect } from "react";
 import Icon from "../../../components/AppIcon";
 import { sendContactLead } from "../../../service/contactService";
+import { getLocationLine } from "../../../utils/locationDisplay";
+
+const defaultLeadMessage = (property) =>
+  `I'm interested in ${property?.title ?? property?.name} at ${getLocationLine(
+    property
+  )}. Please contact me to schedule a viewing or provide more information.`;
 
 const ContactForm = ({ property, agent, variant = "modal", onClose }) => {
   const isModal = variant === "modal";
@@ -11,13 +17,22 @@ const ContactForm = ({ property, agent, variant = "modal", onClose }) => {
     name: "",
     email: "",
     phone: "",
-    message: `I'm interested in ${property?.title} at ${property?.address}. Please contact me to schedule a viewing or provide more information.`,
+    message: defaultLeadMessage(property),
     contactMethod: "email",
   });
 
   const [isSubmitting, setIsSubmitting] = useState(false);
   const [isSubmitted, setIsSubmitted] = useState(false);
   const [errors, setErrors] = useState({});
+
+  const propertyKey = property?._id ?? property?.id ?? property?.slug ?? "";
+
+  useEffect(() => {
+    setFormData((prev) => ({
+      ...prev,
+      message: defaultLeadMessage(property),
+    }));
+  }, [propertyKey]);
 
   const validateForm = () => {
     const newErrors = {};
@@ -70,7 +85,7 @@ const ContactForm = ({ property, agent, variant = "modal", onClose }) => {
         source: "property-details",
         propertyId: property?._id,
         propertyTitle: property?.title,
-        propertyAddress: property?.address,
+        propertyAddress: getLocationLine(property) || property?.address,
         agentName: agent?.name,
         ...formData,
       });

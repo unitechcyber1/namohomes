@@ -3,6 +3,7 @@ import React from 'react';
 import Icon from '../../../components/AppIcon';
 import Image from '../../../components/AppImage';
 import { formatPriceForDisplay } from '../../../utils/indianFormatters';
+import { getLocationLine } from '../../../utils/locationDisplay';
 
 const PropertyOverview = ({
   property,
@@ -21,7 +22,6 @@ const PropertyOverview = ({
     const age = currentYear - yearBuilt;
     return age === 0 ? 'New Construction' : `${age} years old`;
   };
-
   return (
     <div className="card p-6">
       {/* Header Section */}
@@ -44,7 +44,7 @@ const PropertyOverview = ({
 
           <div className="flex items-center space-x-2 text-text-secondary mb-4">
             <Icon name="MapPin" size={16} />
-            <span>{property?.address}</span>
+            <span>{getLocationLine(property)}</span>
           </div>
 
           {property?.mls && (

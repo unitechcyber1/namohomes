@@ -46,7 +46,14 @@ const PropertyDetails = () => {
         const raw = slug
           ? await getProjectBySlug(slug)
           : await getProjectById(propertyId);
-        const data = raw?.data ?? raw;
+        // Support { data }, { project }, or body as the project document
+        const data =
+          raw?.result?.project ??
+          raw?.result ??
+          raw?.project ??
+          raw?.data?.project ??
+          raw?.data ??
+          raw;
         const mapped = mapProjectToPropertyDetails(data);
         setProperty(mapped);
         setIsSaved(false);
