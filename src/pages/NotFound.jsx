@@ -1,10 +1,12 @@
 import React from 'react';
 import { Link } from 'react-router-dom';
 import Icon from '../components/AppIcon';
+import SEO from '../components/SEO';
 
 const NotFound = () => {
   return (
     <div className="min-h-screen bg-background flex items-center justify-center px-4">
+      <SEO />
       <div className="max-w-md w-full text-center">
         <div className="mb-8">
           <div className="w-24 h-24 bg-primary-100 rounded-full flex items-center justify-center mx-auto mb-6">

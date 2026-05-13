@@ -21,6 +21,7 @@ import MortgageCalculator from './components/MortgageCalculator';
 import ContactForm from './components/ContactForm';
 import SimilarProperties from './components/SimilarProperties';
 import LoadingState from './components/LoadingState';
+import SEO from '../../components/SEO';
 
 const PropertyDetails = () => {
   const { slug: slugFromParams } = useParams();
@@ -106,6 +107,7 @@ const PropertyDetails = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
+        <SEO />
         <LoadingState />
       </div>
     );
@@ -115,6 +117,7 @@ const PropertyDetails = () => {
     return (
       <div className="min-h-screen bg-background">
         <Header />
+        <SEO />
         <main className="pt-16 lg:pt-18">
           <div className="max-w-7xl mx-auto px-4 sm:px-6 lg:px-8 py-12">
             <div className="text-center">
@@ -147,6 +150,7 @@ const PropertyDetails = () => {
   return (
     <div className="min-h-screen bg-background">
       <Header />
+      <SEO />
       <main className="pt-16 lg:pt-18">
         {/* Breadcrumb */}
         <div className="bg-surface border-b border-border">
