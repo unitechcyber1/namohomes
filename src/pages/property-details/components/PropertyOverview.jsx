@@ -22,6 +22,8 @@ const PropertyOverview = ({
     const age = currentYear - yearBuilt;
     return age === 0 ? 'New Construction' : `${age} years old`;
   };
+
+
   return (
     <div className="card p-6">
       {/* Header Section */}

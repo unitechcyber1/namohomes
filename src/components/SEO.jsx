@@ -1,6 +1,16 @@
 import React, { useEffect } from "react";
 import { Helmet } from "react-helmet-async";
 import { useSEO } from "../hooks/useSEO";
+import { DEFAULT_SEO } from "../constants/seoDefaults";
+
+function pickFirstString(...candidates) {
+  for (const c of candidates) {
+    if (c == null) continue;
+    const s = String(c).trim();
+    if (s) return s;
+  }
+  return "";
+}
 
 const SEO = ({ path, staticSeo }) => {
   const { seo, loading } = useSEO({ path, staticSeo });
@@ -34,21 +44,38 @@ const SEO = ({ path, staticSeo }) => {
     return null;
   }
 
-  const title = seo?.title || seo?.page_title || "";
-  const description = seo?.description || "";
+  const title =
+    pickFirstString(
+      seo?.title,
+      seo?.page_title,
+      seo?.pageTitle,
+      seo?.meta_title,
+      seo?.metaTitle,
+      seo?.open_graph?.title,
+      seo?.twitter?.title
+    ) || DEFAULT_SEO.title;
+  const description =
+    pickFirstString(
+      seo?.description,
+      seo?.header_description,
+      seo?.open_graph?.description,
+      seo?.twitter?.description,
+      seo?.meta_description,
+      seo?.metaDescription
+    ) || DEFAULT_SEO.description;
   const robots =
     seo?.robots || (seo?.index === false ? "noindex,nofollow" : "index,follow");
   const keywords = seo?.keywords || "";
   const canonical = seo?.url || "";
 
-  const ogTitle = seo?.open_graph?.title || title;
-  const ogDescription = seo?.open_graph?.description || description;
+  const ogTitle = pickFirstString(seo?.open_graph?.title, title);
+  const ogDescription = pickFirstString(seo?.open_graph?.description, description);
 
-  const twitterTitle = seo?.twitter?.title || title;
-  const twitterDescription = seo?.twitter?.description || description;
+  const twitterTitle = pickFirstString(seo?.twitter?.title, title);
+  const twitterDescription = pickFirstString(seo?.twitter?.description, description);
 
   return (
-    <Helmet>
+    <Helmet prioritizeSeoTags>
       {title && <title>{title}</title>}
 
       {description && (

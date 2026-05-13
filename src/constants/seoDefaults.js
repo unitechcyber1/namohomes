@@ -1,7 +1,13 @@
 /**
- * Paths for which the backend has SEO data (GET /api/client/seos-data/:path).
- * For any other path we use DEFAULT_SEO without calling the API (avoids 404).
- * Add paths here when the backend has an SEO record for them.
+ * Production site origin for canonical URLs when `window` is unavailable (SSR/tests).
+ * In the browser, {@link buildCanonicalUrl} prefers `window.location.origin`.
+ */
+export const SITE_ORIGIN = "https://www.namohomesindia.com";
+
+/**
+ * Legacy allowlist (no longer gates API calls). SEO is fetched for every route key from
+ * {@link routeToSeoPath}; keep for docs or tooling if needed.
+ * @deprecated
  */
 export const SEO_API_PATHS = ["home", "contact-us"];
 
@@ -14,7 +20,8 @@ export const DEFAULT_SEO = {
   index: true,
   keywords:
     "NamoHomes, properties in Gurgaon, real estate, new launch projects, residential, commercial",
-  url: "https://www.namohomesindia.com",
+  /** Placeholder; useSEO overwrites with self-referencing canonical per route. */
+  url: SITE_ORIGIN,
   footer_title: "",
   footer_description: "",
   script: "",
