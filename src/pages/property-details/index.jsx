@@ -7,6 +7,7 @@ import Image from '../../components/AppImage';
 
 import { getProjectById, getProjectBySlug } from '../../service/projectService';
 import { mapProjectToPropertyDetails } from '../../utils/mapProjectToPropertyDetails';
+import { fetchSimilarProjects } from '../../utils/similarProjects';
 
 import ImageGallery from './components/ImageGallery';
 import PropertyOverview from './components/PropertyOverview';
@@ -58,8 +59,8 @@ const PropertyDetails = () => {
         const mapped = mapProjectToPropertyDetails(data);
         setProperty(mapped);
         setIsSaved(false);
-        const similar = data?.similarProjects ?? data?.similar ?? [];
-        setSimilarProperties(Array.isArray(similar) ? similar.map(mapProjectToPropertyDetails) : []);
+        const similar = await fetchSimilarProjects(data);
+        setSimilarProperties(similar);
       } catch (err) {
         setError(err?.response?.data?.message || err?.message || 'Failed to load property');
         setProperty(null);
@@ -299,7 +300,10 @@ const PropertyDetails = () => {
 
           {/* Similar Properties */}
           <div className="mt-12">
-            <SimilarProperties properties={similarProperties} />
+            <SimilarProperties
+              properties={similarProperties}
+              currentProperty={property}
+            />
           </div>
         </div>
       </main>

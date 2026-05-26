@@ -1,6 +1,12 @@
 /** Default city slug for property listings URL (e.g. /property-listings/gurugram) */
 export const DEFAULT_CITY_SLUG = "gurugram";
 
+/** Display city name for residential/commercial listing headings */
+export const LISTING_CITY_LABEL = "Gurgaon";
+
+export const RESIDENTIAL_LISTING_TITLE = `Residential Property in ${LISTING_CITY_LABEL}`;
+export const COMMERCIAL_LISTING_TITLE = `Commercial Property in ${LISTING_CITY_LABEL}`;
+
 /** Base path for property listings with optional city. Use for links and redirects. */
 export const getPropertyListingsPath = (citySlug) =>
   `/property-listings/${citySlug ?? DEFAULT_CITY_SLUG}`;

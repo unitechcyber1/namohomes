@@ -11,7 +11,13 @@ import SortDropdown from "./components/SortDropdown";
 import { getProjects, getMicroLocations } from "../../service/projectService";
 import PropertyCard from "../../components/cards/PropertyCard";
 import { slugToName, nameToSlug } from "../../utils/slug";
-import { getPropertyListingsPath, DEFAULT_CITY_SLUG } from "../../constants/routes";
+import {
+  getPropertyListingsPath,
+  DEFAULT_CITY_SLUG,
+  RESIDENTIAL_LISTING_TITLE,
+  COMMERCIAL_LISTING_TITLE,
+  LISTING_CITY_LABEL,
+} from "../../constants/routes";
 
 const PropertyListings = ({
   projectStatus,
@@ -343,15 +349,15 @@ const PropertyListings = ({
 
   // Listing path and title for type-specific pages (residential, commercial, SCO)
   const getListingPath = () => {
-    if (projectType === "residential") return "/residential-in-gurgaon";
-    if (projectType === "commercial") return "/commercial-in-gurgaon";
+    if (projectType === "residential") return "/residential-properties-in-gurgaon";
+    if (projectType === "commercial") return "/commercial-properties-in-gurgaon";
     if (plansType === "sco") return "/sco-plots-in-gurgaon";
     return getPropertyListingsPath(effectiveCitySlug);
   };
   const getListingTitle = () => {
-    if (projectType === "residential") return `Residential Properties in ${cityName}`;
-    if (projectType === "commercial") return `Commercial Properties in ${cityName}`;
-    if (plansType === "sco") return `SCO Plots in ${cityName}`;
+    if (projectType === "residential") return RESIDENTIAL_LISTING_TITLE;
+    if (projectType === "commercial") return COMMERCIAL_LISTING_TITLE;
+    if (plansType === "sco") return `SCO Plots in ${LISTING_CITY_LABEL}`;
     if (effectiveMicrolocation?.trim()) return `Properties in ${effectiveMicrolocation.trim()}`;
     return `Properties in ${cityName}`;
   };
