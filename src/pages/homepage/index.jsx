@@ -6,9 +6,7 @@ import FooterSeoContent from '../../components/FooterSeoContent';
 import HeroSection from './components/HeroSection';
 import FeaturedProperties from './components/FeaturedProperties';
 import QuickStats from './components/QuickStats';
-import AgentSpotlight from './components/AgentSpotlight';
 import Footer from './components/Footer';
-import NewLaunchProjects from './components/NewLaunchProjects';
 import PopularBuilders from './components/PopularBuilders';
 import CategoryBlocks from './components/CategoryBlocks';
 import LeadCapture from './components/LeadCapture';
@@ -71,10 +69,8 @@ const Homepage = () => {
         <HeroSection onSearch={handleSearch} />
         {/* <FeaturedProperties /> */}
         <CategoryBlocks/>
-        <NewLaunchProjects/>
         <PopularBuilders />
         <QuickStats />
-        <AgentSpotlight />
         <LeadCapture/>
       </main>
       

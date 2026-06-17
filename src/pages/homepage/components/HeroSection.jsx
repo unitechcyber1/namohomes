@@ -13,11 +13,11 @@ const HeroSection = ({ onSearch }) => {
 
   const heroImages = [
     {
-      url: "https://namohome-bucket.s3.ap-south-1.amazonaws.com/images/sooraj-dev-SCnQIUbtFIk-unsplash.jpg",
+      url: "https://namohome-bucket.s3.ap-south-1.amazonaws.com/images/1a6aaf2de91421ea0b6d6426ace061.webp",
       alt: "sun rising in the morning"
     },
     { url: "https://namohome-bucket.s3.ap-south-1.amazonaws.com/images/1615993ca9fe975bbd9a6b4e66ec44.webp", alt: "Modern luxury home exterior" },
-    { url: "https://namohome-bucket.s3.ap-south-1.amazonaws.com/images/a152fb0ba819171015ed67b3a53b81.webp", alt: "Beautiful residential neighborhood" },
+    { url: "https://namohome-bucket.s3.ap-south-1.amazonaws.com/images/e087a7daf196d6494bccebc8269a4c.webp", alt: "Beautiful residential neighborhood" },
   ];
 
   useEffect(() => {

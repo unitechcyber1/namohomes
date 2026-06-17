@@ -87,7 +87,7 @@ export const formatPriceForDisplay = (price) => {
 // Property type mappings for Indian market
 export const INDIAN_PROPERTY_TYPES = [
   { value: '', label: 'All Property Types' },
-  { value: 'apartment', label: 'Flat/Apartment' },
+  { value: 'apartment', label: 'High Rise Apartment' },
   { value: 'villa', label: 'Independent House/Villa' },
   { value: 'floor', label: 'Builder Floor' },
   { value: 'plot', label: 'Residential Plot' },
