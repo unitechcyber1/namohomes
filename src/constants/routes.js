@@ -7,6 +7,9 @@ export const LISTING_CITY_LABEL = "Gurgaon";
 export const RESIDENTIAL_LISTING_TITLE = `Residential Property in ${LISTING_CITY_LABEL}`;
 export const COMMERCIAL_LISTING_TITLE = `Commercial Property in ${LISTING_CITY_LABEL}`;
 
+/** Default property type filter on the residential listings page */
+export const DEFAULT_RESIDENTIAL_PLANS_TYPE = "apartment";
+
 /** Base path for property listings with optional city. Use for links and redirects. */
 export const getPropertyListingsPath = (citySlug) =>
   `/property-listings/${citySlug ?? DEFAULT_CITY_SLUG}`;

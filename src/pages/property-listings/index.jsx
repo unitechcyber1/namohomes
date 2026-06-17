@@ -17,6 +17,7 @@ import {
   RESIDENTIAL_LISTING_TITLE,
   COMMERCIAL_LISTING_TITLE,
   LISTING_CITY_LABEL,
+  DEFAULT_RESIDENTIAL_PLANS_TYPE,
 } from "../../constants/routes";
 
 const PropertyListings = ({
@@ -35,7 +36,11 @@ const PropertyListings = ({
   const [filteredProperties, setFilteredProperties] = useState([]);
   const [loading, setLoading] = useState(true);
   const [viewMode, setViewMode] = useState("list"); // 'list' or 'map'
-  const [isFilterOpen, setIsFilterOpen] = useState(false);
+  const [isFilterOpen, setIsFilterOpen] = useState(() =>
+    typeof window !== "undefined"
+      ? window.matchMedia("(min-width: 1024px)").matches
+      : true
+  );
   const [selectedProperty, setSelectedProperty] = useState(null);
   const [sortBy, setSortBy] = useState("relevance");
   const [page, setPage] = useState(1);
@@ -46,18 +51,42 @@ const PropertyListings = ({
   const [totalCount, setTotalCount] = useState(0);
   const [microlocations, setMicrolocations] = useState([]);
   const limit = 21;
+  const skipResidentialPlansDefaultRef = useRef(false);
 
   const effectiveMicrolocation =
     effectiveMicrolocationSlug?.trim()
       ? slugToName(effectiveMicrolocationSlug)
       : searchParams?.get("microlocation") ?? "";
 
+  const effectivePlansType = (() => {
+    if (plansType) return plansType;
+    const fromUrl = searchParams?.get("plans_type");
+    if (fromUrl?.trim()) return fromUrl.trim();
+    if (
+      projectType === "residential" &&
+      !skipResidentialPlansDefaultRef.current
+    ) {
+      return DEFAULT_RESIDENTIAL_PLANS_TYPE;
+    }
+    return "";
+  })();
+
+  // Sync default apartment filter into URL on first residential page visit
+  useEffect(() => {
+    if (projectType !== "residential" || plansType) return;
+    if (skipResidentialPlansDefaultRef.current) return;
+    if (searchParams.get("plans_type")) return;
+
+    const next = new URLSearchParams(searchParams);
+    next.set("plans_type", DEFAULT_RESIDENTIAL_PLANS_TYPE);
+    setSearchParams(next, { replace: true });
+  }, [projectType, plansType, searchParams, setSearchParams]);
+
   const loadProjects = async (pageNumber = 1) => {
     try {
       setLoading(true);
       const query = searchParams?.get("query");
       const locationParam = searchParams?.get("location");
-      const plansTypeParam = searchParams?.get("plans_type");
       const minPriceParam = searchParams?.get("min_price");
       const maxPriceParam = searchParams?.get("max_price");
       const params = {
@@ -69,8 +98,7 @@ const PropertyListings = ({
       if (effectiveMicrolocation?.trim()) params.microlocation = effectiveMicrolocation.trim();
       if (projectStatus) params.project_status = projectStatus;
       if (projectType) params.project_type = projectType;
-      if (plansType) params.plans_type = plansType;
-      else if (plansTypeParam?.trim()) params.plans_type = plansTypeParam.trim();
+      if (effectivePlansType) params.plans_type = effectivePlansType;
       if (minPriceParam != null && minPriceParam !== "") params.min_price = minPriceParam;
       if (maxPriceParam != null && maxPriceParam !== "") params.max_price = maxPriceParam;
       if (sortBy === "low_to_high" || sortBy === "high_to_low") {
@@ -106,7 +134,7 @@ const PropertyListings = ({
   }, [
     searchParams?.get("query") ?? "",
     searchParams?.get("location") ?? "",
-    searchParams?.get("plans_type") ?? "",
+    effectivePlansType,
     searchParams?.get("min_price") ?? "",
     searchParams?.get("max_price") ?? "",
     effectiveMicrolocation,
@@ -139,7 +167,7 @@ const PropertyListings = ({
   useEffect(() => {
     if (properties?.length === 0 && !loading) return;
     applyFilters(properties);
-  }, [properties, searchParams?.toString(), sortBy, projectType, plansType, effectiveMicrolocation, searchParams?.get("plans_type")]);
+  }, [properties, searchParams?.toString(), sortBy, projectType, effectivePlansType, effectiveMicrolocation]);
 
   // Apply filters based on search params
   const applyFilters = (propertiesToFilter = properties) => {
@@ -284,6 +312,14 @@ const PropertyListings = ({
 
   // Handle filter changes (only scalar filter keys go into URL; skip arrays e.g. amenities)
   const handleFilterChange = (filters) => {
+    if (
+      projectType === "residential" &&
+      !plansType &&
+      !filters?.plans_type
+    ) {
+      skipResidentialPlansDefaultRef.current = true;
+    }
+
     const newSearchParams = new URLSearchParams();
 
     Object.entries(filters)?.forEach(([key, value]) => {
@@ -378,7 +414,7 @@ const PropertyListings = ({
     const location = searchParams?.get("location");
     const microlocationParam = searchParams?.get("microlocation");
     const propertyTypeParam = searchParams?.get("propertyType");
-    const plansTypeParam = searchParams?.get("plans_type");
+    const plansTypeParam = searchParams?.get("plans_type") || effectivePlansType;
 
     if (location) {
       breadcrumbs?.push({ label: location, path: null });
@@ -515,7 +551,7 @@ const PropertyListings = ({
                 location: searchParams?.get("location") || "",
                 microlocation: effectiveMicrolocation?.trim() || searchParams?.get("microlocation") || "",
                 propertyType: searchParams?.get("propertyType") || "",
-                plans_type: searchParams?.get("plans_type") || "",
+                plans_type: effectivePlansType,
                 min_price: searchParams?.get("min_price") || "",
                 max_price: searchParams?.get("max_price") || "",
                 bedrooms: searchParams?.get("bedrooms") || "",
